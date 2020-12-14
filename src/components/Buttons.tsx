@@ -1,6 +1,5 @@
 import * as React from "react";
 import styled from "styled-components";
-import { HTMLMotionProps, motion, useCycle } from "framer-motion";
 import Button from "./Button";
 
 let StyledContainer = styled.div`
@@ -17,18 +16,21 @@ let StyledContainer = styled.div`
 `;
 export interface ButtonsProps {}
 let Tunings = ["Drop D", "Double drop D", "Open E", "Open G", "Open A"];
-const Buttons: React.FunctionComponent<ButtonsProps> = () => {
+const Buttons: React.FunctionComponent<ButtonsProps> = React.memo(() => {
   let [selected, setSelected] = React.useState(0);
-  let buttons = Tunings.map((tuning, index) => (
-    <Button
-      key={index}
-      selected={index === selected}
-      onClick={() => setSelected(index)}
-    >
-      {tuning}
-    </Button>
-  ));
+  let buttons = Tunings.map((tuning, index) => {
+    let isSelected = index === selected;
+    return (
+      <Button
+        key={index}
+        selected={isSelected}
+        onClick={() => setSelected(index)}
+      >
+        {tuning}
+      </Button>
+    );
+  });
   return <StyledContainer>{buttons}</StyledContainer>;
-};
+});
 
 export default Buttons;
