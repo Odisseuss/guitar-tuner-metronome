@@ -1,5 +1,44 @@
 import React from "react";
-import "./App.css";
+import styled from "styled-components";
+import Button from "./components/Button";
+import Buttons from "./components/Buttons";
+import Header from "./components/Header";
+import StringBeingTuned from "./components/StringBeingTuned";
+import { ReactComponent as Wave } from "./Wave.svg";
+let CenteredAppContainer = styled.div`
+  max-width: 650px;
+  max-height: 750px;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    72.19% 72.19% at 49.92% 27.81%,
+    #1f0e18 0%,
+    #1f0e18 0.01%,
+    #0f0910 100%
+  );
+`;
+let Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+`;
+let SVGContainer = styled.div`
+  width: 100%;
+  height: 45%;
+  position: absolute;
+  bottom: 0;
+`;
+let StyledWaveSvg = styled(Wave)`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  max-height: 373px;
+  --color-1: #1f0e18;
+  --color-2: #0f0910;
+  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.15));
+`;
 interface Props {}
 interface State {
   note: string;
@@ -131,6 +170,7 @@ class App extends React.Component<Props, State> {
   findPitch() {
     if (this.state.analyser)
       this.state.analyser.getFloatTimeDomainData(this.state.buffer);
+
     let ac = 0;
     if (this.state.audioContext)
       ac = this.autocorellate(
@@ -150,6 +190,7 @@ class App extends React.Component<Props, State> {
     window.requestAnimationFrame(this.findPitch);
   }
   start() {
+    // Live input
     this.setState(() => {
       let context = new AudioContext();
       return { audioContext: context, analyser: context.createAnalyser() };
@@ -170,35 +211,42 @@ class App extends React.Component<Props, State> {
   }
   render() {
     return (
-      <div>
-        <button onClick={this.start}>Start</button>
-        <h1>{this.state.frequency}</h1>
-        <h2>{this.state.note}</h2>
-      </div>
+      <Container>
+        <CenteredAppContainer>
+          <div style={{ height: "100%", width: "100%", position: "relative" }}>
+            <Header />
+            <Buttons />
+            <button onClick={this.start}>Start</button>
+            <StringBeingTuned
+              note={"A"}
+              frequency={350}
+              noteProps={{ color: "#F72640" }}
+            />
+
+            <SVGContainer>
+              <h1
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  top: "45%",
+                  fontWeight: 400,
+                  fontSize: 18,
+                  textAlign: "center",
+                  zIndex: 100,
+                  color: "#F72640",
+                }}
+              >
+                {this.state.frequency}Hz
+              </h1>
+              <StyledWaveSvg
+                style={{ position: "absolute", bottom: 0, left: 0 }}
+              />
+            </SVGContainer>
+          </div>
+        </CenteredAppContainer>
+      </Container>
     );
   }
-
-  // let [audioContext] = useState<AudioContext>(new AudioContext());
-  // let [analyser, setAnalyser] = useState<AnalyserNode>(
-  //   audioContext.createAnalyser()
-  // );
-
-  // useEffect(() => {
-  //   audioContext.resume();
-  //   navigator.getUserMedia(
-  //     {
-  //       audio: {
-  //         autoGainControl: false,
-  //         echoCancellation: false,
-  //         noiseSuppression: false,
-  //       },
-  //     },
-  //     gotStream,
-  //     (err) => {
-  //       console.log("Getusermedia threw error: " + err);
-  //     }
-  //   );
-  // }, []);
 }
 
 export default App;
