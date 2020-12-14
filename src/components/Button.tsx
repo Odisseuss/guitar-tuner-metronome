@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { HTMLMotionProps, motion, useCycle } from "framer-motion";
+import { HTMLMotionProps, motion } from "framer-motion";
 
 let StyledButton = styled(motion.button)<ButtonProps>`
   font-weight: 500;
@@ -19,40 +19,31 @@ export interface ButtonProps extends HTMLMotionProps<"button"> {
   selected: boolean;
 }
 
-const Button: React.FunctionComponent<ButtonProps> = (props) => {
-  const [animate, cycle] = useCycle(
-    {
-      color: "#777777",
-      backgroundColor: "rgba(150, 150, 150, 0)",
-      transition: { duration: 0.35 },
-    },
-    {
-      color: "#ffffff",
-      backgroundColor: "rgba(150, 150, 150, 0.2)",
-      transition: { duration: 0.35 },
-    }
-  );
-  return (
-    <StyledButton
-      animate={
-        props.selected
-          ? {
-              color: "#ffffff",
-              backgroundColor: "rgba(150, 150, 150, 0.2)",
-              transition: { duration: 0.35 },
-            }
-          : {
-              color: "#777777",
-              backgroundColor: "rgba(150, 150, 150, 0)",
-              transition: { duration: 0.35 },
-            }
-      }
-      onClick={props.onClick}
-      selected={props.selected}
-    >
-      {props.children}
-    </StyledButton>
-  );
-};
+const Button: React.FunctionComponent<ButtonProps> = React.memo(
+  (props) => {
+    return (
+      <StyledButton
+        animate={
+          props.selected
+            ? {
+                color: "#ffffff",
+                backgroundColor: "rgba(150, 150, 150, 0.2)",
+                transition: { duration: 0.35 },
+              }
+            : {
+                color: "#777777",
+                backgroundColor: "rgba(150, 150, 150, 0)",
+                transition: { duration: 0.35 },
+              }
+        }
+        onClick={props.onClick}
+        selected={props.selected}
+      >
+        {props.children}
+      </StyledButton>
+    );
+  },
+  (prevprops, nextprops) => prevprops.selected === nextprops.selected
+);
 
 export default Button;
