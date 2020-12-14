@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import Button from "./components/Button";
 import Buttons from "./components/Buttons";
 import Header from "./components/Header";
 import StringBeingTuned from "./components/StringBeingTuned";
@@ -47,6 +46,9 @@ interface State {
   analyser: AnalyserNode | undefined;
   buffer: Float32Array;
   mediaStreamSource: MediaStreamAudioSourceNode | undefined;
+  oscillatorNode: OscillatorNode | undefined;
+  isPlaying: boolean;
+  requestAnimationFrameID: number | undefined;
 }
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -58,10 +60,14 @@ class App extends React.Component<Props, State> {
       frequency: 0,
       note: "-",
       mediaStreamSource: undefined,
+      oscillatorNode: undefined,
+      isPlaying: false,
+      requestAnimationFrameID: undefined,
     };
     this.gotStream = this.gotStream.bind(this);
     this.findPitch = this.findPitch.bind(this);
-    this.start = this.start.bind(this);
+    this.liveInput = this.liveInput.bind(this);
+    this.oscillator = this.oscillator.bind(this);
   }
 
   getUserMedia(
@@ -187,10 +193,21 @@ class App extends React.Component<Props, State> {
     } else {
       this.setState({ frequency: 0, note: "-" });
     }
-    window.requestAnimationFrame(this.findPitch);
+    let rafID = window.requestAnimationFrame(this.findPitch);
+    this.setState({ requestAnimationFrameID: rafID });
   }
-  start() {
-    // Live input
+  liveInput() {
+    if (this.state.isPlaying) {
+      //stop playing and return
+      this.state.oscillatorNode?.stop();
+      this.setState({
+        isPlaying: false,
+        oscillatorNode: undefined,
+        analyser: undefined,
+      });
+      if (this.state.requestAnimationFrameID)
+        window.cancelAnimationFrame(this.state.requestAnimationFrameID);
+    }
     this.setState(() => {
       let context = new AudioContext();
       return { audioContext: context, analyser: context.createAnalyser() };
@@ -209,6 +226,39 @@ class App extends React.Component<Props, State> {
       }
     );
   }
+  oscillator() {
+    if (this.state.isPlaying) {
+      //stop playing and return
+      if (this.state.oscillatorNode) this.state.oscillatorNode.stop(0);
+      this.setState({
+        oscillatorNode: undefined,
+        analyser: undefined,
+        isPlaying: false,
+      });
+      if (this.state.requestAnimationFrameID)
+        window.cancelAnimationFrame(this.state.requestAnimationFrameID);
+    }
+    let context = new AudioContext();
+    let analyser = context.createAnalyser();
+    analyser.fftSize = 2048;
+    let oscillator = context.createOscillator();
+    oscillator.connect(analyser);
+    analyser.connect(context.destination);
+    let volume = context.createGain();
+    volume.connect(context.destination);
+    volume.gain.value = -0.9;
+    oscillator.connect(volume);
+    oscillator.start(0);
+    this.setState({
+      audioContext: context,
+      analyser: analyser,
+      oscillatorNode: oscillator,
+      isPlaying: true,
+    });
+
+    this.findPitch();
+  }
+
   render() {
     return (
       <Container>
@@ -216,7 +266,8 @@ class App extends React.Component<Props, State> {
           <div style={{ height: "100%", width: "100%", position: "relative" }}>
             <Header />
             <Buttons />
-            <button onClick={this.start}>Start</button>
+            <button onClick={this.oscillator}>Oscillator</button>
+            <button onClick={this.liveInput}>Live Input</button>
             <StringBeingTuned
               note={"A"}
               frequency={350}
