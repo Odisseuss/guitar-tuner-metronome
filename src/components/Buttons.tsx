@@ -1,6 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import Button from "./Button";
+import tunings from "../tunings";
 
 let StyledContainer = styled.div`
   width: calc(100% - 30px);
@@ -15,7 +16,7 @@ let StyledContainer = styled.div`
   }
 `;
 export interface ButtonsProps {}
-let Tunings = ["Drop D", "Double drop D", "Open E", "Open G", "Open A"];
+let Tunings = Object.keys(tunings);
 const Buttons: React.FunctionComponent<ButtonsProps> = React.memo(() => {
   let [selected, setSelected] = React.useState(0);
   let buttons = Tunings.map((tuning, index) => {
