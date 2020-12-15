@@ -15,9 +15,14 @@ let StyledContainer = styled.div`
     width: 0px;
   }
 `;
-export interface ButtonsProps {}
+export interface ButtonsProps {
+  onClick: (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    tuning: string
+  ) => void;
+}
 let Tunings = Object.keys(tunings);
-const Buttons: React.FunctionComponent<ButtonsProps> = React.memo(() => {
+const Buttons: React.FunctionComponent<ButtonsProps> = React.memo((props) => {
   let [selected, setSelected] = React.useState(0);
   let buttons = Tunings.map((tuning, index) => {
     let isSelected = index === selected;
@@ -25,7 +30,10 @@ const Buttons: React.FunctionComponent<ButtonsProps> = React.memo(() => {
       <Button
         key={index}
         selected={isSelected}
-        onClick={() => setSelected(index)}
+        onClick={(event) => {
+          props.onClick(event, tuning);
+          setSelected(index);
+        }}
       >
         {tuning}
       </Button>

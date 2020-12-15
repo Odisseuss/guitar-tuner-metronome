@@ -5,16 +5,21 @@ import Header from "./components/Header";
 import StringBeingTuned from "./components/StringBeingTuned";
 import Tunings, { Letters, Frequencies } from "./tunings";
 import { ReactComponent as Wave } from "./Wave.svg";
-let CenteredAppContainer = styled.div`
+import colors, { ColorScheme, ColorSchemes } from "./colors";
+interface ContainerGradientProps {
+  color_1: string;
+  color_2: string;
+}
+let CenteredAppContainer = styled.div<ContainerGradientProps>`
   max-width: 650px;
   max-height: 750px;
   width: 100%;
   height: 100%;
   background: radial-gradient(
     72.19% 72.19% at 49.92% 27.81%,
-    #1f0e18 0%,
-    #1f0e18 0.01%,
-    #0f0910 100%
+    ${(props) => props.color_1} 0%,
+    ${(props) => props.color_1} 0.01%,
+    ${(props) => props.color_2} 100%
   );
 `;
 let Container = styled.div`
@@ -30,20 +35,25 @@ let SVGContainer = styled.div`
   position: absolute;
   bottom: 0;
 `;
-let StyledWaveSvg = styled(Wave)`
+let StyledWaveSvg = styled(Wave)<SVGProps>`
   width: 100%;
   height: 100%;
   position: absolute;
   max-height: 373px;
-  --color-1: #1f0e18;
-  --color-2: #0f0910;
+  --color-1: ${(props) => props.color_1};
+  --color-2: ${(props) => props.color_2};
   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.15));
 `;
+interface SVGProps {
+  color_1: string;
+  color_2: string;
+}
 interface Props {}
 interface CurrentStringData {
   frequency: number;
   letter: string;
 }
+
 interface State {
   note: string;
   frequency: number;
@@ -54,8 +64,9 @@ interface State {
   oscillatorNode: OscillatorNode | undefined;
   isPlaying: boolean;
   requestAnimationFrameID: number | undefined;
-  currentTuning: "Standard" | "Drop D" | "Double Drop D" | "DADGAD";
+  currentTuning: string;
   currentStringBeingTuned: CurrentStringData;
+  currentColors: ColorScheme;
 }
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -72,11 +83,17 @@ class App extends React.Component<Props, State> {
       requestAnimationFrameID: undefined,
       currentTuning: "Standard",
       currentStringBeingTuned: { frequency: 0, letter: "-" },
+      currentColors: {
+        primary: "#F72640",
+        gradient_darker: "#0F0910",
+        gradient_lighter: "#1F0E18",
+      },
     };
     this.gotStream = this.gotStream.bind(this);
     this.findPitch = this.findPitch.bind(this);
     this.liveInput = this.liveInput.bind(this);
     this.oscillator = this.oscillator.bind(this);
+    this.handleTuningSelection = this.handleTuningSelection.bind(this);
   }
 
   getUserMedia(
@@ -220,23 +237,27 @@ class App extends React.Component<Props, State> {
   absoluteValOfDifference(a: number, b: number) {
     return Math.abs(a - b);
   }
-  determineStringBeingTuned(
-    tuning: "Standard" | "Drop D" | "Double Drop D" | "DADGAD"
-  ) {
+  determineStringBeingTuned(tuning: string) {
     // Get the frequencies and letters for the specific tuning
     let tuningFrequencies = this.getProperty(
-      this.getProperty(Tunings, tuning),
+      this.getProperty(
+        Tunings,
+        tuning as "Standard" | "Drop D" | "Double Drop D" | "DADGAD"
+      ),
       "frequencies"
     );
     let tuningLetters = this.getProperty(
-      this.getProperty(Tunings, tuning),
+      this.getProperty(
+        Tunings,
+        tuning as "Standard" | "Drop D" | "Double Drop D" | "DADGAD"
+      ),
       "letters"
     );
     let detectedFreq = this.state.frequency;
     let closestFreq = 0;
     let closestLetter = "-";
     let maxDifference = 9999;
-
+    let minIndex = 0;
     // Compute the absolute differences and figure out the minimum
     // Map over the list of string frequencies
     Object.values(tuningFrequencies).map((stringFreq, index) => {
@@ -246,22 +267,35 @@ class App extends React.Component<Props, State> {
       if (diff < maxDifference && detectedFreq !== 0) {
         // We found the new minimum
         maxDifference = diff;
+        // Get the index of the minimum
+        minIndex = index;
         // Update the closest letter and freq
-        closestLetter = this.getProperty(
-          tuningLetters,
-          `string_${index + 1}` as keyof Letters
-        );
-        closestFreq = this.getProperty(
-          tuningFrequencies,
-          `string_${index + 1}` as keyof Frequencies
-        );
       }
     });
+    console.log(minIndex);
+    closestLetter = this.getProperty(
+      tuningLetters,
+      `string_${minIndex + 1}` as keyof Letters
+    );
+    closestFreq = this.getProperty(
+      tuningFrequencies,
+      `string_${minIndex + 1}` as keyof Frequencies
+    );
+    let currentColors = this.getProperty(
+      colors,
+      closestLetter as keyof ColorSchemes
+    );
+    console.log(closestLetter);
+    console.log(currentColors);
     this.setState({
       currentStringBeingTuned: {
         letter: closestLetter,
         frequency: closestFreq,
       },
+      currentColors: this.getProperty(
+        colors,
+        closestLetter as keyof ColorSchemes
+      ),
     });
     requestAnimationFrame(this.findPitch);
   }
@@ -318,7 +352,7 @@ class App extends React.Component<Props, State> {
     volume.connect(context.destination);
     volume.gain.value = -0.95;
     oscillator.connect(volume);
-    oscillator.frequency.setValueAtTime(85, context.currentTime);
+    oscillator.frequency.setValueAtTime(82, context.currentTime);
     oscillator.start(0);
     this.setState({
       audioContext: context,
@@ -328,20 +362,30 @@ class App extends React.Component<Props, State> {
     });
     this.findPitch();
   }
+  handleTuningSelection(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    tuning: string
+  ) {
+    this.setState({ currentTuning: tuning });
+    console.log(this.state.currentTuning);
+  }
 
   render() {
     return (
       <Container>
-        <CenteredAppContainer>
+        <CenteredAppContainer
+          color_1={this.state.currentColors.gradient_lighter}
+          color_2={this.state.currentColors.gradient_darker}
+        >
           <div style={{ height: "100%", width: "100%", position: "relative" }}>
             <Header />
-            <Buttons />
+            <Buttons onClick={this.handleTuningSelection} />
             <button onClick={this.oscillator}>Oscillator</button>
             <button onClick={this.liveInput}>Live Input</button>
             <StringBeingTuned
               note={this.state.currentStringBeingTuned.letter}
               frequency={this.state.currentStringBeingTuned.frequency}
-              noteProps={{ color: "#F72640" }}
+              noteProps={{ color: this.state.currentColors.primary }}
             />
 
             <SVGContainer>
@@ -354,7 +398,7 @@ class App extends React.Component<Props, State> {
                   fontSize: 18,
                   textAlign: "center",
                   zIndex: 100,
-                  color: "#F72640",
+                  color: this.state.currentColors.primary,
                 }}
               >
                 {this.state.frequency}Hz
@@ -368,7 +412,7 @@ class App extends React.Component<Props, State> {
                   fontSize: 18,
                   textAlign: "center",
                   zIndex: 100,
-                  color: "#F72640",
+                  color: this.state.currentColors.primary,
                 }}
               >
                 {this.state.frequency !== 0
@@ -382,6 +426,8 @@ class App extends React.Component<Props, State> {
                   : ""}
               </h1>
               <StyledWaveSvg
+                color_1={this.state.currentColors.gradient_lighter}
+                color_2={this.state.currentColors.gradient_darker}
                 style={{ position: "absolute", bottom: 0, left: 0 }}
               />
             </SVGContainer>
