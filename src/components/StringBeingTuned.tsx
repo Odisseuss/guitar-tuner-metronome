@@ -29,7 +29,6 @@ let Frequency = styled.p`
   font-size: 18px;
   font-weight: 400;
 `;
-// let Tunings = ["Drop D", "Double drop D", "Open E", "Open G", "Open A"];
 const StringBeingTuned: React.FunctionComponent<StringBeingTunedProps> = (
   props
 ) => {
