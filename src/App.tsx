@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Buttons from "./components/Buttons";
 import Header from "./components/Header";
 import StringBeingTuned from "./components/StringBeingTuned";
+import Tunings, { Letters, Frequencies } from "./tunings";
 import { ReactComponent as Wave } from "./Wave.svg";
 let CenteredAppContainer = styled.div`
   max-width: 650px;
@@ -39,6 +40,10 @@ let StyledWaveSvg = styled(Wave)`
   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.15));
 `;
 interface Props {}
+interface CurrentStringData {
+  frequency: number;
+  letter: string;
+}
 interface State {
   note: string;
   frequency: number;
@@ -49,6 +54,8 @@ interface State {
   oscillatorNode: OscillatorNode | undefined;
   isPlaying: boolean;
   requestAnimationFrameID: number | undefined;
+  currentTuning: "Standard" | "Drop D" | "Double Drop D" | "DADGAD";
+  currentStringBeingTuned: CurrentStringData;
 }
 class App extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -63,6 +70,8 @@ class App extends React.Component<Props, State> {
       oscillatorNode: undefined,
       isPlaying: false,
       requestAnimationFrameID: undefined,
+      currentTuning: "Standard",
+      currentStringBeingTuned: { frequency: 0, letter: "-" },
     };
     this.gotStream = this.gotStream.bind(this);
     this.findPitch = this.findPitch.bind(this);
@@ -160,17 +169,24 @@ class App extends React.Component<Props, State> {
   }
   gotStream(stream: MediaStream) {
     this.setState((prevState) => {
+      let volume;
+      let mediaStreamSource;
       let newAnalyser = prevState.analyser;
       if (newAnalyser) newAnalyser.fftSize = 2048;
-      return {
-        mediaStreamSource: this.state.audioContext?.createMediaStreamSource(
+      if (this.state.audioContext) {
+        volume = this.state.audioContext.createGain();
+        volume.gain.value = 2;
+        mediaStreamSource = this.state.audioContext.createMediaStreamSource(
           stream
-        ),
+        );
+        mediaStreamSource.connect(volume);
+        if (newAnalyser) volume.connect(newAnalyser);
+      }
+      return {
+        mediaStreamSource: mediaStreamSource,
         analyser: newAnalyser,
       };
     });
-    if (this.state.analyser)
-      this.state.mediaStreamSource?.connect(this.state.analyser);
     this.findPitch();
   }
   findPitch() {
@@ -187,14 +203,67 @@ class App extends React.Component<Props, State> {
     if (ac !== -1) {
       let pitch = ac;
       this.setState({
-        frequency: Math.round(pitch),
+        frequency: Math.floor(pitch),
         note: this.noteFromPitch(pitch),
       });
     } else {
       this.setState({ frequency: 0, note: "-" });
     }
-    let rafID = window.requestAnimationFrame(this.findPitch);
+    let rafID = window.requestAnimationFrame(() =>
+      this.determineStringBeingTuned(this.state.currentTuning)
+    );
     this.setState({ requestAnimationFrameID: rafID });
+  }
+  getProperty<T, K extends keyof T>(o: T, propertyName: K): T[K] {
+    return o[propertyName];
+  }
+  absoluteValOfDifference(a: number, b: number) {
+    return Math.abs(a - b);
+  }
+  determineStringBeingTuned(
+    tuning: "Standard" | "Drop D" | "Double Drop D" | "DADGAD"
+  ) {
+    // Get the frequencies and letters for the specific tuning
+    let tuningFrequencies = this.getProperty(
+      this.getProperty(Tunings, tuning),
+      "frequencies"
+    );
+    let tuningLetters = this.getProperty(
+      this.getProperty(Tunings, tuning),
+      "letters"
+    );
+    let detectedFreq = this.state.frequency;
+    let closestFreq = 0;
+    let closestLetter = "-";
+    let maxDifference = 9999;
+
+    // Compute the absolute differences and figure out the minimum
+    // Map over the list of string frequencies
+    Object.values(tuningFrequencies).map((stringFreq, index) => {
+      // Compute the difference between the one detected, and the one known
+      let diff = this.absoluteValOfDifference(detectedFreq, stringFreq);
+      // If the diffrence is smaller
+      if (diff < maxDifference && detectedFreq !== 0) {
+        // We found the new minimum
+        maxDifference = diff;
+        // Update the closest letter and freq
+        closestLetter = this.getProperty(
+          tuningLetters,
+          `string_${index + 1}` as keyof Letters
+        );
+        closestFreq = this.getProperty(
+          tuningFrequencies,
+          `string_${index + 1}` as keyof Frequencies
+        );
+      }
+    });
+    this.setState({
+      currentStringBeingTuned: {
+        letter: closestLetter,
+        frequency: closestFreq,
+      },
+    });
+    requestAnimationFrame(this.findPitch);
   }
   liveInput() {
     if (this.state.isPlaying) {
@@ -226,6 +295,7 @@ class App extends React.Component<Props, State> {
       }
     );
   }
+
   oscillator() {
     if (this.state.isPlaying) {
       //stop playing and return
@@ -246,8 +316,9 @@ class App extends React.Component<Props, State> {
     analyser.connect(context.destination);
     let volume = context.createGain();
     volume.connect(context.destination);
-    volume.gain.value = -0.9;
+    volume.gain.value = -0.95;
     oscillator.connect(volume);
+    oscillator.frequency.setValueAtTime(85, context.currentTime);
     oscillator.start(0);
     this.setState({
       audioContext: context,
@@ -255,7 +326,6 @@ class App extends React.Component<Props, State> {
       oscillatorNode: oscillator,
       isPlaying: true,
     });
-
     this.findPitch();
   }
 
@@ -269,8 +339,8 @@ class App extends React.Component<Props, State> {
             <button onClick={this.oscillator}>Oscillator</button>
             <button onClick={this.liveInput}>Live Input</button>
             <StringBeingTuned
-              note={"A"}
-              frequency={350}
+              note={this.state.currentStringBeingTuned.letter}
+              frequency={this.state.currentStringBeingTuned.frequency}
               noteProps={{ color: "#F72640" }}
             />
 
@@ -288,6 +358,28 @@ class App extends React.Component<Props, State> {
                 }}
               >
                 {this.state.frequency}Hz
+              </h1>
+              <h1
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  top: "50%",
+                  fontWeight: 400,
+                  fontSize: 18,
+                  textAlign: "center",
+                  zIndex: 100,
+                  color: "#F72640",
+                }}
+              >
+                {this.state.frequency !== 0
+                  ? this.state.frequency ===
+                    this.state.currentStringBeingTuned.frequency
+                    ? "GOOD"
+                    : this.state.frequency >
+                      this.state.currentStringBeingTuned.frequency
+                    ? "Lower"
+                    : "Higher"
+                  : ""}
               </h1>
               <StyledWaveSvg
                 style={{ position: "absolute", bottom: 0, left: 0 }}
