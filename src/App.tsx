@@ -6,6 +6,9 @@ import StringBeingTuned from "./components/StringBeingTuned";
 import Tunings, { Letters, Frequencies } from "./tunings";
 import { ReactComponent as Wave } from "./Wave.svg";
 import colors, { ColorScheme, ColorSchemes } from "./colors";
+// import LoadPitchDetectorWasm from "./LoadPitchDetectorWasm";
+
+// LoadPitchDetectorWasm().then((data) => {});
 interface ContainerGradientProps {
   color_1: string;
   color_2: string;
