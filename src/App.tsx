@@ -6,6 +6,8 @@ import StringBeingTuned from "./components/StringBeingTuned";
 import Tunings, { Letters, Frequencies } from "./tunings";
 import { ReactComponent as Wave } from "./Wave.svg";
 import colors, { ColorScheme, ColorSchemes } from "./colors";
+import mod from "./components/WasmLoader";
+console.log(mod);
 // import LoadPitchDetectorWasm from "./LoadPitchDetectorWasm";
 
 // LoadPitchDetectorWasm().then((data) => {});
