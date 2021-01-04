@@ -9,11 +9,12 @@
     "release": {
       "binaryFile": "public/optimized.wasm",
       "textFile": "public/optimized.wat",
+      "tsdFile": "src/asTypes.ts",
       "sourceMap": true,
       "optimizeLevel": 3,
-      "shrinkLevel": 1,
+      "shrinkLevel": 0,
       "converge": false,
-      "noAssert": false
+      "noAssert": true
     }
   },
   "options": {}
