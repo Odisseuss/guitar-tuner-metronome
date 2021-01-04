@@ -108,7 +108,13 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     let t0 = performance.now();
     if (this.state.audioContext) {
       let YIN = await detectors.YIN();
-      ac = YIN(this.state.buffer, 0.1, this.state.audioContext.sampleRate, 0.1);
+      if (YIN)
+        ac = YIN(
+          this.state.buffer,
+          0.1,
+          this.state.audioContext.sampleRate,
+          0.1
+        );
     }
 
     let t1 = performance.now();
@@ -126,7 +132,10 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       this.setState({ frequency: 0, note: "-" });
     }
     let rafID = window.requestAnimationFrame(() =>
-      this.setStringCurrentlyBeingTuned(this.state.currentTuning)
+      this.setStringCurrentlyBeingTuned(
+        this.state.currentTuning,
+        this.findPitchWithYIN
+      )
     );
     this.setState({ requestAnimationFrameID: rafID });
   }
@@ -156,11 +165,14 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       timeToCompute: t1 - t0,
     });
     let rafID = window.requestAnimationFrame(() =>
-      this.setStringCurrentlyBeingTuned(this.state.currentTuning)
+      this.setStringCurrentlyBeingTuned(
+        this.state.currentTuning,
+        this.findPitch
+      )
     );
     this.setState({ requestAnimationFrameID: rafID });
   }
-  setStringCurrentlyBeingTuned(tuning: string) {
+  setStringCurrentlyBeingTuned(tuning: string, callback: FrameRequestCallback) {
     let result = functions.determineStringBeingTuned(
       tuning,
       this.state.frequency
@@ -169,7 +181,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       currentStringBeingTuned: result.currentStringBeingTuned,
       currentColors: result.currentColors,
     });
-    requestAnimationFrame(this.findPitch);
+    requestAnimationFrame(callback);
   }
   liveInput() {
     if (this.state.isPlaying) {

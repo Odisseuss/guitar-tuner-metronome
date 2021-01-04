@@ -1,6 +1,9 @@
 import * as React from "react";
-import functions from "./components/Functions";
-import colors from "./colors";
+import colors from "../colors";
+
+import functions from "../components/Functions";
+//@ts-nocheck
+
 describe("GetProperty Helper Func", () => {
   let testObj = { 1: 1, 2: "two", three: 3 };
   test("Returns correct property", () => {

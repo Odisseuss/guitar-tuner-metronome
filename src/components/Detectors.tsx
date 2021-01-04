@@ -1,4 +1,3 @@
-import functions from "./Functions";
 import { loadWasm } from "./WasmLoader";
 let detectors = {
   autocorellation: function autocorellation(
@@ -59,7 +58,9 @@ let detectors = {
     return sampleRate / t0;
   },
   YIN: function () {
-    return loadWasm.then((result) => result.YinDetector);
+    return loadWasm
+      .then((result) => result.YinDetector)
+      .catch((e) => console.log(e));
   },
 };
 export default detectors;

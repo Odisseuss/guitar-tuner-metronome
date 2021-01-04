@@ -1,5 +1,6 @@
 import { instantiateStreaming } from "@assemblyscript/loader";
 import ModuleTypes from "../asTypes";
+
 export const loadWasm = instantiateStreaming<typeof ModuleTypes>(
   fetch("optimized.wasm")
 ).then(({ exports }) =>
@@ -24,3 +25,6 @@ export const loadWasm = instantiateStreaming<typeof ModuleTypes>(
     },
   })
 );
+// .catch((e) => {
+//   console.log(e);
+// });
