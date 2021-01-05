@@ -12,6 +12,7 @@ import {
   TunerProps,
   TunerState,
 } from "../Interfaces";
+import PerformanceComparison from "./PerformanceComparison";
 let CenteredAppContainer = styled.div<ContainerGradientProps>`
   max-width: 650px;
   max-height: 750px;
@@ -86,7 +87,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       if (newAnalyser) newAnalyser.fftSize = 4096;
       if (this.state.audioContext) {
         volume = this.state.audioContext.createGain();
-        volume.gain.value = 2;
+        volume.gain.value = 4;
         mediaStreamSource = this.state.audioContext.createMediaStreamSource(
           stream
         );
@@ -98,7 +99,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
         analyser: newAnalyser,
       };
     });
-    this.findPitch();
+    this.findPitchWithYIN();
   }
   async findPitchWithYIN() {
     if (this.state.analyser)
@@ -322,6 +323,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
               >
                 {this.state.timeToCompute}
               </h1>
+              {/* <PerformanceComparison></PerformanceComparison> */}
               <StyledWaveSvg
                 color_1={this.state.currentColors.gradient_lighter}
                 color_2={this.state.currentColors.gradient_darker}
