@@ -1,37 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import TuningSelectionButtons from "./TuningSelectionButtons";
-import Header from "./Header";
 import StringBeingTuned from "./StringBeingTuned";
 import { ReactComponent as Wave } from "../Wave.svg";
 import functions from "./Functions";
 import detectors from "./Detectors";
-import {
-  ContainerGradientProps,
-  SVGProps,
-  TunerProps,
-  TunerState,
-} from "../Interfaces";
+import { SVGProps, TunerProps, TunerState } from "../Interfaces";
 import PerformanceComparison from "./PerformanceComparison";
-let CenteredAppContainer = styled.div<ContainerGradientProps>`
-  max-width: 650px;
-  max-height: 750px;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(
-    72.19% 72.19% at 49.92% 27.81%,
-    ${(props) => props.color_1} 0%,
-    ${(props) => props.color_1} 0.01%,
-    ${(props) => props.color_2} 100%
-  );
-`;
-let Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-`;
+
 let SVGContainer = styled.div`
   width: 100%;
   height: 45%;
@@ -65,11 +41,6 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       requestAnimationFrameID: undefined,
       currentTuning: "Standard",
       currentStringBeingTuned: { frequency: 0, letter: "-" },
-      currentColors: {
-        primary: "#F72640",
-        gradient_darker: "#0F0910",
-        gradient_lighter: "#1F0E18",
-      },
     };
     this.gotStream = this.gotStream.bind(this);
     this.findPitch = this.findPitch.bind(this);
@@ -178,9 +149,9 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       tuning,
       this.state.frequency
     );
+    this.props.setColors(result.currentColors);
     this.setState({
       currentStringBeingTuned: result.currentStringBeingTuned,
-      currentColors: result.currentColors,
     });
     requestAnimationFrame(callback);
   }
@@ -256,83 +227,75 @@ class Tuner extends React.Component<TunerProps, TunerState> {
 
   render() {
     return (
-      <Container>
-        <CenteredAppContainer
-          color_1={this.state.currentColors.gradient_lighter}
-          color_2={this.state.currentColors.gradient_darker}
-        >
-          <div style={{ height: "100%", width: "100%", position: "relative" }}>
-            <Header />
-            <TuningSelectionButtons onClick={this.handleTuningSelection} />
-            <button onClick={this.oscillator}>Oscillator</button>
-            <button onClick={this.liveInput}>Live Input</button>
-            <StringBeingTuned
-              note={this.state.currentStringBeingTuned.letter}
-              frequency={this.state.currentStringBeingTuned.frequency}
-              noteProps={{ color: this.state.currentColors.primary }}
-            />
+      <div style={{ height: "90%", width: "100%", position: "relative" }}>
+        <TuningSelectionButtons onClick={this.handleTuningSelection} />
+        <button onClick={this.oscillator}>Oscillator</button>
+        <button onClick={this.liveInput}>Live Input</button>
+        <StringBeingTuned
+          note={this.state.currentStringBeingTuned.letter}
+          frequency={this.state.currentStringBeingTuned.frequency}
+          noteProps={{ color: this.props.currentColors.primary }}
+        />
 
-            <SVGContainer>
-              <h1
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  top: "45%",
-                  fontWeight: 400,
-                  fontSize: 18,
-                  textAlign: "center",
-                  zIndex: 100,
-                  color: this.state.currentColors.primary,
-                }}
-              >
-                {this.state.frequency}Hz
-              </h1>
-              <h1
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  top: "50%",
-                  fontWeight: 400,
-                  fontSize: 18,
-                  textAlign: "center",
-                  zIndex: 100,
-                  color: this.state.currentColors.primary,
-                }}
-              >
-                {this.state.frequency !== 0
-                  ? this.state.frequency ===
-                    this.state.currentStringBeingTuned.frequency
-                    ? "GOOD"
-                    : this.state.frequency >
-                      this.state.currentStringBeingTuned.frequency
-                    ? "Lower"
-                    : "Higher"
-                  : ""}
-              </h1>
-              <h1
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  top: "55%",
-                  fontWeight: 400,
-                  fontSize: 18,
-                  textAlign: "center",
-                  zIndex: 100,
-                  color: this.state.currentColors.primary,
-                }}
-              >
-                {this.state.timeToCompute}
-              </h1>
-              {/* <PerformanceComparison></PerformanceComparison> */}
-              <StyledWaveSvg
-                color_1={this.state.currentColors.gradient_lighter}
-                color_2={this.state.currentColors.gradient_darker}
-                style={{ position: "absolute", bottom: 0, left: 0 }}
-              />
-            </SVGContainer>
-          </div>
-        </CenteredAppContainer>
-      </Container>
+        <SVGContainer>
+          <h1
+            style={{
+              position: "absolute",
+              width: "100%",
+              top: "45%",
+              fontWeight: 400,
+              fontSize: 18,
+              textAlign: "center",
+              zIndex: 100,
+              color: this.props.currentColors.primary,
+            }}
+          >
+            {this.state.frequency}Hz
+          </h1>
+          <h1
+            style={{
+              position: "absolute",
+              width: "100%",
+              top: "50%",
+              fontWeight: 400,
+              fontSize: 18,
+              textAlign: "center",
+              zIndex: 100,
+              color: this.props.currentColors.primary,
+            }}
+          >
+            {this.state.frequency !== 0
+              ? this.state.frequency ===
+                this.state.currentStringBeingTuned.frequency
+                ? "GOOD"
+                : this.state.frequency >
+                  this.state.currentStringBeingTuned.frequency
+                ? "Lower"
+                : "Higher"
+              : ""}
+          </h1>
+          <h1
+            style={{
+              position: "absolute",
+              width: "100%",
+              top: "55%",
+              fontWeight: 400,
+              fontSize: 18,
+              textAlign: "center",
+              zIndex: 100,
+              color: this.props.currentColors.primary,
+            }}
+          >
+            {this.state.timeToCompute}
+          </h1>
+          {/* <PerformanceComparison></PerformanceComparison> */}
+          <StyledWaveSvg
+            color_1={this.props.currentColors.gradient_lighter}
+            color_2={this.props.currentColors.gradient_darker}
+            style={{ position: "absolute", bottom: 0, left: 0 }}
+          />
+        </SVGContainer>
+      </div>
     );
   }
 }

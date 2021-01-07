@@ -1,10 +1,10 @@
 import * as React from "react";
 import styled from "styled-components";
 import { ReactComponent as Metronome } from "../Metronome.svg";
-
+import { Link } from "react-router-dom";
 let HeaderContainer = styled.div`
+  height: 10%;
   width: 100%;
-  padding-top: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,12 +19,16 @@ let StyledMetronomeSVG = styled(Metronome)`
   position: absolute;
   left: 30px;
 `;
-export interface HeaderProps {}
+export interface HeaderProps {
+  navigateLocation: string;
+}
 
-const Header: React.FunctionComponent<HeaderProps> = () => {
+const Header: React.FunctionComponent<HeaderProps> = (props) => {
   return (
     <HeaderContainer>
-      <StyledMetronomeSVG fill={"#969696"} />
+      <Link to={props.navigateLocation}>
+        <StyledMetronomeSVG fill={"#969696"} />
+      </Link>
       <Branding>Guitune</Branding>
     </HeaderContainer>
   );

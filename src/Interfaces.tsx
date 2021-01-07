@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { ColorScheme } from "./colors";
 export interface ContainerGradientProps {
   color_1: string;
@@ -7,7 +8,16 @@ export interface SVGProps {
   color_1: string;
   color_2: string;
 }
-export interface TunerProps {}
+export interface TunerProps {
+  setColors: Dispatch<
+    SetStateAction<{
+      primary: string;
+      gradient_darker: string;
+      gradient_lighter: string;
+    }>
+  >;
+  currentColors: ColorScheme;
+}
 
 export interface CurrentStringData {
   frequency: number;
@@ -26,7 +36,6 @@ export interface TunerState {
   requestAnimationFrameID: number | undefined;
   currentTuning: string;
   currentStringBeingTuned: CurrentStringData;
-  currentColors: ColorScheme;
   timeToCompute: number;
 }
 export interface AppState {}
