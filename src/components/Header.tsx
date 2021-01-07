@@ -26,8 +26,13 @@ export interface HeaderProps {
 const Header: React.FunctionComponent<HeaderProps> = (props) => {
   return (
     <HeaderContainer>
-      <Link to={props.navigateLocation}>
-        <StyledMetronomeSVG fill={"#969696"} />
+      <Link
+        to={props.navigateLocation}
+        style={{ height: "100%", display: "flex", alignItems: "center" }}
+      >
+        <StyledMetronomeSVG
+          fill={props.navigateLocation === "/" ? "#FFFFFF" : "#969696"}
+        />
       </Link>
       <Branding>Guitune</Branding>
     </HeaderContainer>
