@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import { ReactComponent as Metronome } from "../Metronome.svg";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 let HeaderContainer = styled.div`
   height: 10%;
   width: 100%;
@@ -21,17 +21,43 @@ let StyledMetronomeSVG = styled(Metronome)`
 `;
 export interface HeaderProps {
   navigateLocation: string;
+  setColors: React.Dispatch<
+    React.SetStateAction<{
+      primary: string;
+      gradient_darker: string;
+      gradient_lighter: string;
+    }>
+  >;
 }
 
-const Header: React.FunctionComponent<HeaderProps> = (props) => {
+const Header: React.FunctionComponent<HeaderProps> = ({
+  setColors,
+  navigateLocation,
+}) => {
+  let location = useLocation();
+  React.useEffect(() => {
+    let colors =
+      location.pathname === "/"
+        ? {
+            primary: "#F72640",
+            gradient_darker: "#0F0910",
+            gradient_lighter: "#1F0E18",
+          }
+        : {
+            primary: "#FFFFFF",
+            gradient_darker: "#0F0F0F",
+            gradient_lighter: "#282828",
+          };
+    setColors(colors);
+  }, [location.pathname, setColors]);
   return (
     <HeaderContainer>
       <Link
-        to={props.navigateLocation}
+        to={navigateLocation}
         style={{ height: "100%", display: "flex", alignItems: "center" }}
       >
         <StyledMetronomeSVG
-          fill={props.navigateLocation === "/" ? "#FFFFFF" : "#969696"}
+          fill={navigateLocation === "/" ? "#FFFFFF" : "#969696"}
         />
       </Link>
       <Branding>Guitune</Branding>

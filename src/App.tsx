@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Metronome from "./components/Metronome";
 import Header from "./components/Header";
 import styled from "styled-components";
+import colors from "./colors";
 
 let CenteredAppContainer = styled.div<ContainerGradientProps>`
   max-width: 650px;
@@ -34,6 +35,7 @@ const App: React.FunctionComponent<AppProps> = () => {
     gradient_darker: "#0F0910",
     gradient_lighter: "#1F0E18",
   });
+
   return (
     <Container>
       <CenteredAppContainer
@@ -43,15 +45,18 @@ const App: React.FunctionComponent<AppProps> = () => {
         <Router>
           <Switch>
             <Route exact path="/">
-              <Header navigateLocation={"/metronome"} />
+              <Header
+                navigateLocation={"/metronome"}
+                setColors={setCurrentColors}
+              />
               <Tuner
                 setColors={setCurrentColors}
                 currentColors={currentColors}
               />
             </Route>
             <Route path="/metronome">
-              <Header navigateLocation={"/"} />
-              <Metronome />
+              <Header navigateLocation={"/"} setColors={setCurrentColors} />
+              <Metronome primaryColor={currentColors.primary} />
             </Route>
           </Switch>
         </Router>
