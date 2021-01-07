@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@assemblyscript/loader": "^0.17.13",
+    "@fseehawer/react-circular-slider": "^2.3.5",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.5.0",
