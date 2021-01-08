@@ -1,7 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { wrap } from "comlink";
-import MetronomeLogic from "./MetronomeLogic.worker";
+
 let ColumnContainer = styled.div`
   width: 100%;
   display: flex;
@@ -18,7 +17,6 @@ let RowContainer = styled.div`
 let MeasureIndicator = styled.div`
   font-weight: 500;
   font-size: 18px;
-  line-height:
   color: #fff;
   border-radius: 66px;
   outline: none;
@@ -40,31 +38,16 @@ let StyledButton = styled.button`
 `;
 export interface MetronomeMeasureButtonsProps {
   beatsPerMeasure: number;
-  setBeatsPerMeasure: React.Dispatch<React.SetStateAction<number>>;
+  setBeatsPerMeasure: (beatsPerMeasure: number) => void;
+  setNoteType: (noteType: 0 | 1 | 2) => void;
+  playMetronome: () => "stop" | "play";
 }
 
-const myComlinkWorkerInstance: Worker = new MetronomeLogic();
-const myComlinkWorkerApi: any = wrap(myComlinkWorkerInstance);
-console.log(myComlinkWorkerApi.start);
-// let points = [];
-// let prev = 0;
-// let prevClockTime = 0;
-// let i = 0;
-// myComlinkWorkerApi.start((t: number) => {
-//   points.push(t - prev);
-//   points.push(myComlinkWorkerApi.audioCtx.currentTime - prevClockTime);
-//   prevClockTime = myComlinkWorkerApi.audioCtx.currentTime;
-//   i++;
-//   prev = t;
-// });
-console.log("[App] MyComlinkWorker instance:", myComlinkWorkerInstance);
-console.log("[App] MyComlinkWorker api:", myComlinkWorkerApi);
-// myComlinkWorkerApi.createMessage("John Doe").then((message: string): void => {
-//   console.log("[App] MyComlinkWorker message:", message);
-// });
 const MetronomeMeasureButtons: React.FunctionComponent<MetronomeMeasureButtonsProps> = ({
   beatsPerMeasure,
   setBeatsPerMeasure,
+  setNoteType,
+  playMetronome,
 }) => {
   return (
     <ColumnContainer>
@@ -86,12 +69,68 @@ const MetronomeMeasureButtons: React.FunctionComponent<MetronomeMeasureButtonsPr
         >
           +
         </StyledButton>
+      </RowContainer>
+      <StyledButton
+        style={{
+          fontSize: 24,
+          marginBottom: "-50px",
+          width: "auto",
+          borderRadius: 66,
+          outline: "none",
+          padding: "10px 60px",
+          textAlign: "center",
+        }}
+        onClick={() => {
+          playMetronome();
+        }}
+      >
+        Start
+      </StyledButton>
+      <RowContainer style={{ marginTop: 50 }}>
         <StyledButton
+          style={{
+            fontSize: 18,
+            width: "auto",
+            borderRadius: 66,
+            outline: "none",
+            padding: "5px 20px",
+            textAlign: "center",
+          }}
           onClick={() => {
-            if (beatsPerMeasure < 12) setBeatsPerMeasure(beatsPerMeasure + 1);
+            setNoteType(2);
           }}
         >
-          Start
+          Quarter Note
+        </StyledButton>
+        <StyledButton
+          style={{
+            fontSize: 18,
+            width: "auto",
+            borderRadius: 66,
+            outline: "none",
+            padding: "5px 20px",
+            textAlign: "center",
+          }}
+          onClick={() => {
+            setNoteType(1);
+          }}
+        >
+          8th Note
+        </StyledButton>
+        <StyledButton
+          style={{
+            fontSize: 18,
+            width: "auto",
+            borderRadius: 66,
+            outline: "none",
+            padding: "5px 20px",
+            textAlign: "center",
+          }}
+          onClick={() => {
+            setNoteType(0);
+          }}
+        >
+          16th Note
         </StyledButton>
       </RowContainer>
     </ColumnContainer>
