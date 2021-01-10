@@ -1,4 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
+import {
+  IAnalyserNode,
+  IAudioContext,
+  IMediaStreamAudioSourceNode,
+  IOscillatorNode,
+} from "standardized-audio-context";
 import { ColorScheme } from "./colors";
 export interface ContainerGradientProps {
   color_1: string;
@@ -27,11 +33,11 @@ export interface CurrentStringData {
 export interface TunerState {
   note: string;
   frequency: number;
-  audioContext: AudioContext | undefined;
-  analyser: AnalyserNode | undefined;
+  audioContext: IAudioContext | undefined;
+  analyser: IAnalyserNode<IAudioContext> | undefined;
   buffer: Float32Array;
-  mediaStreamSource: MediaStreamAudioSourceNode | undefined;
-  oscillatorNode: OscillatorNode | undefined;
+  mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext> | undefined;
+  oscillatorNode: IOscillatorNode<IAudioContext> | undefined;
   isPlaying: boolean;
   requestAnimationFrameID: number | undefined;
   currentTuning: string;
