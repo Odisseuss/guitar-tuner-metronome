@@ -4,6 +4,7 @@ import CircularSlider from "@fseehawer/react-circular-slider";
 import styled from "styled-components";
 import MetronomeMeasureButton from "./MetronomeMeasureButtons";
 import MetronomeLogic from "./MetronomeScheduler.worker";
+import { AudioContext } from "standardized-audio-context";
 export interface MetronomeProps {
   primaryColor: string;
 }

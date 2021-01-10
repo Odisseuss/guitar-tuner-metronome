@@ -7,6 +7,7 @@ import functions from "./Functions";
 import detectors from "./Detectors";
 import { SVGProps, TunerProps, TunerState } from "../Interfaces";
 import PerformanceComparison from "./PerformanceComparison";
+import { AudioContext } from "standardized-audio-context";
 
 let SVGContainer = styled.div`
   width: 100%;
@@ -51,24 +52,22 @@ class Tuner extends React.Component<TunerProps, TunerState> {
   }
 
   gotStream(stream: MediaStream) {
-    this.setState((prevState) => {
-      let volume;
-      let mediaStreamSource;
-      let newAnalyser = prevState.analyser;
-      if (newAnalyser) newAnalyser.fftSize = 4096;
-      if (this.state.audioContext) {
-        volume = this.state.audioContext.createGain();
-        volume.gain.value = 4;
-        mediaStreamSource = this.state.audioContext.createMediaStreamSource(
-          stream
-        );
-        mediaStreamSource.connect(volume);
-        if (newAnalyser) volume.connect(newAnalyser);
-      }
-      return {
-        mediaStreamSource: mediaStreamSource,
-        analyser: newAnalyser,
-      };
+    let volume;
+    let mediaStreamSource;
+    let newAnalyser = this.state.analyser;
+    if (newAnalyser) newAnalyser.fftSize = 4096;
+    if (this.state.audioContext) {
+      volume = this.state.audioContext.createGain();
+      volume.gain.value = 2;
+      mediaStreamSource = this.state.audioContext.createMediaStreamSource(
+        stream
+      );
+      mediaStreamSource.connect(volume);
+      if (newAnalyser) volume.connect(newAnalyser);
+    }
+    this.setState({
+      mediaStreamSource: mediaStreamSource,
+      analyser: newAnalyser,
     });
     this.findPitchWithYIN();
   }
@@ -167,23 +166,23 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       if (this.state.requestAnimationFrameID)
         window.cancelAnimationFrame(this.state.requestAnimationFrameID);
     }
-    this.setState(() => {
-      let context = new AudioContext({ sampleRate: 44100 });
-      return { audioContext: context, analyser: context.createAnalyser() };
+    let context = new AudioContext();
+    this.setState({
+      audioContext: context,
+      analyser: context.createAnalyser(),
     });
-    navigator.getUserMedia(
-      {
+    navigator.mediaDevices
+      .getUserMedia({
         audio: {
           autoGainControl: false,
           echoCancellation: false,
           noiseSuppression: false,
         },
-      },
-      this.gotStream,
-      (err) => {
+      })
+      .then(this.gotStream)
+      .catch((err) => {
         console.log("Getusermedia threw error: " + err);
-      }
-    );
+      });
   }
   oscillator() {
     if (this.state.isPlaying) {
