@@ -72,8 +72,11 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     this.findPitchWithYIN();
   }
   async findPitchWithYIN() {
-    if (this.state.analyser)
-      this.state.analyser.getFloatTimeDomainData(this.state.buffer);
+    if (this.state.analyser) {
+      let buffer = new Float32Array(4096);
+      this.state.analyser.getFloatTimeDomainData(buffer);
+      this.setState({ buffer: buffer });
+    }
 
     let ac = 0;
     let t0 = performance.now();
@@ -111,8 +114,11 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     this.setState({ requestAnimationFrameID: rafID });
   }
   findPitch() {
-    if (this.state.analyser)
-      this.state.analyser.getFloatTimeDomainData(this.state.buffer);
+    if (this.state.analyser) {
+      let buffer = new Float32Array(4096);
+      this.state.analyser.getFloatTimeDomainData(buffer);
+      this.setState({ buffer: buffer });
+    }
 
     let t0 = performance.now();
     let ac = 0;
