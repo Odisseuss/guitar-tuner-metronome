@@ -8,6 +8,8 @@ import detectors from "./Detectors";
 import { SVGProps, TunerProps, TunerState } from "../Interfaces";
 import PerformanceComparison from "./PerformanceComparison";
 import { AudioContext } from "standardized-audio-context";
+import { motion } from "framer-motion";
+import Ruler from "./Ruler";
 
 let SVGContainer = styled.div`
   width: 100%;
@@ -42,6 +44,8 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       requestAnimationFrameID: undefined,
       currentTuning: "Standard",
       currentStringBeingTuned: { frequency: 0, letter: "-" },
+      windowWidth: 650,
+      rulerDistanceBetweenGradings: 27.083333333333332,
     };
     this.gotStream = this.gotStream.bind(this);
     this.findPitch = this.findPitch.bind(this);
@@ -50,7 +54,22 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     this.oscillator = this.oscillator.bind(this);
     this.handleTuningSelection = this.handleTuningSelection.bind(this);
   }
-
+  componentDidMount() {
+    window.addEventListener("resize", (event) => {
+      let windowWidth = Math.min(
+        document.body.scrollWidth,
+        document.documentElement.scrollWidth,
+        document.body.offsetWidth,
+        document.documentElement.offsetWidth,
+        document.documentElement.clientWidth,
+        650
+      );
+      this.setState({
+        rulerDistanceBetweenGradings: windowWidth / 24,
+        windowWidth: windowWidth,
+      });
+    });
+  }
   gotStream(stream: MediaStream) {
     let volume;
     let mediaStreamSource;
@@ -85,9 +104,9 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       if (YIN)
         ac = YIN(
           this.state.buffer,
-          0.1,
+          0.15,
           this.state.audioContext.sampleRate,
-          0.1
+          0.6
         );
     }
 
@@ -97,7 +116,6 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     });
     if (ac !== -1 && ac > 30 && ac < 1048) {
       let pitch = ac;
-      console.log(Math.floor(pitch));
       this.setState({
         frequency: Math.floor(pitch),
         note: functions.noteFromPitch(pitch),
@@ -150,14 +168,17 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     this.setState({ requestAnimationFrameID: rafID });
   }
   setStringCurrentlyBeingTuned(tuning: string, callback: FrameRequestCallback) {
-    let result = functions.determineStringBeingTuned(
-      tuning,
-      this.state.frequency
-    );
-    this.props.setColors(result.currentColors);
-    this.setState({
-      currentStringBeingTuned: result.currentStringBeingTuned,
-    });
+    if (this.state.frequency !== 0) {
+      let result = functions.determineStringBeingTuned(
+        tuning,
+        this.state.frequency
+      );
+      this.props.setColors(result.currentColors);
+      this.setState({
+        currentStringBeingTuned: result.currentStringBeingTuned,
+      });
+    }
+
     requestAnimationFrame(callback);
   }
   liveInput() {
@@ -212,7 +233,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     volume.connect(context.destination);
     volume.gain.value = -0.95;
     oscillator.connect(volume);
-    oscillator.frequency.setValueAtTime(82, context.currentTime);
+    oscillator.frequency.setValueAtTime(87, context.currentTime);
     oscillator.start(0);
     this.setState({
       audioContext: context,
@@ -220,7 +241,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       oscillatorNode: oscillator,
       isPlaying: true,
     });
-    this.findPitch();
+    this.findPitchWithYIN();
   }
   handleTuningSelection(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -231,6 +252,46 @@ class Tuner extends React.Component<TunerProps, TunerState> {
   }
 
   render() {
+    let rulerDivs = new Array(23).fill(0).map((line, index) => {
+      let height;
+      if (index === 0 || (index - 1) % 5 !== 0) {
+        height = 60;
+      } else {
+        height = 110;
+      }
+      return (
+        <div
+          key={index}
+          style={{
+            width: "3px",
+            height: height + "px",
+            backgroundColor: "rgba(51, 51, 51, 70)",
+          }}
+        ></div>
+      );
+    });
+    let translationDistanceToLastLine =
+      this.state.windowWidth / 2 - this.state.rulerDistanceBetweenGradings;
+    let clampRulerToWindowCondition =
+      (Math.abs(
+        this.state.frequency - this.state.currentStringBeingTuned.frequency
+      ) /
+        5) *
+        this.state.rulerDistanceBetweenGradings >
+      translationDistanceToLastLine;
+    let signOfDifference =
+      this.state.frequency - this.state.currentStringBeingTuned.frequency < 0
+        ? -1
+        : 1;
+    let rulerTranslate =
+      this.state.frequency !== 0
+        ? clampRulerToWindowCondition
+          ? signOfDifference * translationDistanceToLastLine
+          : ((this.state.frequency -
+              this.state.currentStringBeingTuned.frequency) /
+              5) *
+            this.state.rulerDistanceBetweenGradings
+        : 0;
     return (
       <div style={{ height: "90%", width: "100%", position: "relative" }}>
         <TuningSelectionButtons onClick={this.handleTuningSelection} />
@@ -294,6 +355,11 @@ class Tuner extends React.Component<TunerProps, TunerState> {
             {this.state.timeToCompute}
           </h1>
           {/* <PerformanceComparison></PerformanceComparison> */}
+          <Ruler
+            rulerGradings={rulerDivs}
+            gradingColors={this.props.currentColors.primary}
+            rulerTranslate={rulerTranslate}
+          />
           <StyledWaveSvg
             color_1={this.props.currentColors.gradient_lighter}
             color_2={this.props.currentColors.gradient_darker}
