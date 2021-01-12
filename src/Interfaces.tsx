@@ -43,6 +43,8 @@ export interface TunerState {
   currentTuning: string;
   currentStringBeingTuned: CurrentStringData;
   timeToCompute: number;
+  rulerDistanceBetweenGradings: number;
+  windowWidth: number;
 }
 export interface AppState {}
 export interface AppProps {}
