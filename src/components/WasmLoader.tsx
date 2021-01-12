@@ -7,18 +7,19 @@ export const loadWasm = instantiateStreaming<typeof ModuleTypes>(
   Object.assign({}, exports, {
     YinDetector: (
       arrayValues: Float32Array,
-      threshold: number,
+      setAcceptanceThreshold: number,
       sampleRate: number,
       probabilityThreshold: number
     ) => {
       const pInput = exports.__retain(
         exports.__newArray(exports.Float32AudioBuffer_ID, arrayValues)
       );
-      const pOutput = exports.YIN(
+      const pOutput = exports.getPitch(
         pInput,
-        threshold,
+        setAcceptanceThreshold,
         sampleRate,
-        probabilityThreshold
+        probabilityThreshold,
+        arrayValues.length
       );
       exports.__release(pInput);
       return pOutput;

@@ -1,39 +1,40 @@
 (module
  (type $i32_i32_=>_none (func (param i32 i32)))
- (type $i32_=>_i32 (func (param i32) (result i32)))
  (type $i32_i32_=>_i32 (func (param i32 i32) (result i32)))
+ (type $i32_=>_i32 (func (param i32) (result i32)))
  (type $i32_=>_none (func (param i32)))
  (type $i32_i32_i32_=>_none (func (param i32 i32 i32)))
  (type $i32_i32_i32_=>_i32 (func (param i32 i32 i32) (result i32)))
  (type $i32_i32_=>_f32 (func (param i32 i32) (result f32)))
- (type $i32_i32_f32_=>_none (func (param i32 i32 f32)))
  (type $none_=>_none (func))
  (type $i32_i32_i32_i32_=>_none (func (param i32 i32 i32 i32)))
- (type $i32_f32_i32_f32_=>_f32 (func (param i32 f32 i32 f32) (result f32)))
+ (type $i32_i32_f32_=>_none (func (param i32 i32 f32)))
+ (type $i32_f32_i32_f32_i32_=>_f32 (func (param i32 f32 i32 f32 i32) (result f32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (memory $0 1)
  (data (i32.const 12) "<\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00(\00\00\00a\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data (i32.const 76) "<\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00p\00u\00r\00e\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data (i32.const 140) "<\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data (i32.const 204) ",\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
- (data (i32.const 252) "<\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00&\00\00\00~\00l\00i\00b\00/\00s\00t\00a\00t\00i\00c\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00\00\00\00\00")
+ (data (i32.const 252) "<\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00&\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00b\00u\00f\00f\00e\00r\00.\00t\00s\00\00\00\00\00\00\00")
  (data (i32.const 316) "<\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e\00\00\00\00\00\00\00\00\00")
- (data (i32.const 384) "\05\00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00!\19\00\00\02\00\00\00$\19\00\00\00\00\00\00")
+ (data (i32.const 380) "<\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00$\00\00\00~\00l\00i\00b\00/\00t\00y\00p\00e\00d\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00\00\00\00\00\00\00")
+ (data (i32.const 448) "\04\00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00!\19\00\00\02\00\00\00")
  (table $0 1 funcref)
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/ASC_SHRINK_LEVEL i32 (i32.const 0))
- (global $assembly/index/Float32AudioBuffer_ID i32 (i32.const 3))
- (global $~lib/rt/__rtti_base i32 (i32.const 384))
- (global $~lib/memory/__heap_base i32 (i32.const 428))
+ (global $assembly/yin/Float32AudioBuffer_ID i32 (i32.const 3))
+ (global $~lib/rt/__rtti_base i32 (i32.const 448))
+ (global $~lib/memory/__heap_base i32 (i32.const 484))
  (export "memory" (memory $0))
  (export "__new" (func $~lib/rt/pure/__new))
  (export "__renew" (func $~lib/rt/pure/__renew))
  (export "__retain" (func $~lib/rt/pure/__retain))
  (export "__release" (func $~lib/rt/pure/__release))
  (export "__rtti_base" (global $~lib/rt/__rtti_base))
- (export "Float32AudioBuffer_ID" (global $assembly/index/Float32AudioBuffer_ID))
- (export "YIN" (func $assembly/index/YIN))
+ (export "Float32AudioBuffer_ID" (global $assembly/yin/Float32AudioBuffer_ID))
+ (export "getPitch" (func $assembly/yin/getPitch))
  (func $~lib/rt/tlsf/removeBlock (param $0 i32) (param $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -2993,12 +2994,6 @@
    call $~lib/rt/pure/decrement
   end
  )
- (func $~lib/typedarray/Float32Array#get:length (param $0 i32) (result i32)
-  local.get $0
-  i32.load offset=8
-  i32.const 2
-  i32.shr_u
- )
  (func $~lib/memory/memory.fill (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (local $4 i32)
@@ -3212,78 +3207,118 @@
    end
   end
  )
- (func $~lib/staticarray/StaticArray<f32>#constructor (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
+ (func $~lib/arraybuffer/ArrayBufferView#constructor (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
   (local $4 i32)
+  (local $5 i32)
+  (local $6 i32)
+  local.get $0
+  i32.eqz
+  if
+   i32.const 12
+   i32.const 2
+   call $~lib/rt/pure/__new
+   call $~lib/rt/pure/__retain
+   local.set $0
+  end
+  local.get $0
+  i32.const 0
+  i32.store
+  local.get $0
+  i32.const 0
+  i32.store offset=4
+  local.get $0
+  i32.const 0
+  i32.store offset=8
   local.get $1
   i32.const 1073741820
-  i32.const 2
+  local.get $2
   i32.shr_u
   i32.gt_u
   if
    i32.const 224
    i32.const 272
-   i32.const 83
-   i32.const 60
+   i32.const 18
+   i32.const 57
    call $~lib/builtins/abort
    unreachable
   end
   local.get $1
-  i32.const 2
-  i32.shl
-  local.set $2
   local.get $2
-  i32.const 4
+  i32.shl
+  local.tee $1
+  i32.const 0
   call $~lib/rt/pure/__new
   local.set $3
   local.get $3
   i32.const 0
-  local.get $2
+  local.get $1
   call $~lib/memory/memory.fill
+  local.get $0
+  local.tee $4
   local.get $3
-  call $~lib/rt/pure/__retain
-  local.set $4
-  local.get $0
-  call $~lib/rt/pure/__release
+  local.tee $5
   local.get $4
- )
- (func $~lib/staticarray/StaticArray<f32>#get:length (param $0 i32) (result i32)
+  i32.load
+  local.tee $6
+  i32.ne
+  if
+   local.get $5
+   call $~lib/rt/pure/__retain
+   local.set $5
+   local.get $6
+   call $~lib/rt/pure/__release
+  end
+  local.get $5
+  i32.store
   local.get $0
-  i32.const 20
-  i32.sub
-  i32.load offset=16
+  local.get $3
+  i32.store offset=4
+  local.get $0
+  local.get $1
+  i32.store offset=8
+  local.get $0
+ )
+ (func $~lib/typedarray/Float32Array#constructor (param $0 i32) (param $1 i32) (result i32)
+  local.get $0
+  i32.eqz
+  if
+   i32.const 12
+   i32.const 3
+   call $~lib/rt/pure/__new
+   call $~lib/rt/pure/__retain
+   local.set $0
+  end
+  local.get $0
+  local.get $1
+  i32.const 2
+  call $~lib/arraybuffer/ArrayBufferView#constructor
+  local.set $0
+  local.get $0
+ )
+ (func $~lib/typedarray/Float32Array#__set (param $0 i32) (param $1 i32) (param $2 f32)
+  local.get $1
+  local.get $0
+  i32.load offset=8
   i32.const 2
   i32.shr_u
- )
- (func $~lib/staticarray/StaticArray<f32>#__uset (param $0 i32) (param $1 i32) (param $2 f32)
-  i32.const 0
-  drop
+  i32.ge_u
+  if
+   i32.const 336
+   i32.const 400
+   i32.const 1187
+   i32.const 64
+   call $~lib/builtins/abort
+   unreachable
+  end
   local.get $0
+  i32.load offset=4
   local.get $1
   i32.const 2
   i32.shl
   i32.add
   local.get $2
   f32.store
- )
- (func $~lib/staticarray/StaticArray<f32>#__set (param $0 i32) (param $1 i32) (param $2 f32)
-  local.get $1
-  local.get $0
-  call $~lib/staticarray/StaticArray<f32>#get:length
-  i32.ge_u
-  if
-   i32.const 336
-   i32.const 272
-   i32.const 110
-   i32.const 41
-   call $~lib/builtins/abort
-   unreachable
-  end
-  local.get $0
-  local.get $1
-  local.get $2
-  call $~lib/staticarray/StaticArray<f32>#__uset
  )
  (func $~lib/typedarray/Float32Array#__uget (param $0 i32) (param $1 i32) (result f32)
   local.get $0
@@ -3294,419 +3329,389 @@
   i32.add
   f32.load
  )
- (func $~lib/staticarray/StaticArray<f32>#__uget (param $0 i32) (param $1 i32) (result f32)
+ (func $~lib/typedarray/Float32Array#__get (param $0 i32) (param $1 i32) (result f32)
+  local.get $1
   local.get $0
+  i32.load offset=8
+  i32.const 2
+  i32.shr_u
+  i32.ge_u
+  if
+   i32.const 336
+   i32.const 400
+   i32.const 1176
+   i32.const 64
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $0
+  i32.load offset=4
   local.get $1
   i32.const 2
   i32.shl
   i32.add
   f32.load
  )
- (func $~lib/staticarray/StaticArray<f32>#__get (param $0 i32) (param $1 i32) (result f32)
-  (local $2 f32)
-  local.get $1
-  local.get $0
-  call $~lib/staticarray/StaticArray<f32>#get:length
-  i32.ge_u
-  if
-   i32.const 336
-   i32.const 272
-   i32.const 95
-   i32.const 41
-   call $~lib/builtins/abort
-   unreachable
-  end
-  local.get $0
-  local.get $1
-  call $~lib/staticarray/StaticArray<f32>#__uget
-  local.set $2
-  i32.const 0
-  drop
-  local.get $2
- )
- (func $assembly/index/YIN (param $0 i32) (param $1 f32) (param $2 i32) (param $3 f32) (result f32)
-  (local $4 i32)
+ (func $assembly/yin/getPitch (param $0 i32) (param $1 f32) (param $2 i32) (param $3 f32) (param $4 i32) (result f32)
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  (local $8 i32)
-  (local $9 f32)
+  (local $8 f32)
+  (local $9 f64)
   (local $10 i32)
   (local $11 i32)
   (local $12 i32)
   (local $13 i32)
-  (local $14 i32)
-  (local $15 f32)
+  (local $14 f32)
+  (local $15 i32)
   (local $16 f32)
   (local $17 f32)
   (local $18 f32)
-  (local $19 f32)
+  (local $19 i32)
+  (local $20 i32)
+  (local $21 f32)
+  (local $22 f32)
+  (local $23 f32)
   local.get $0
   call $~lib/rt/pure/__retain
   local.set $0
-  local.get $0
-  call $~lib/rt/pure/__retain
+  local.get $4
+  i32.const 2
+  i32.div_s
   local.set $5
+  i32.const 0
   local.get $5
-  call $~lib/typedarray/Float32Array#get:length
+  call $~lib/typedarray/Float32Array#constructor
   local.set $6
+  i32.const -1
+  local.set $7
+  f32.const -1
+  local.set $8
+  f64.const 0
+  local.set $9
   i32.const 1
-  local.set $4
+  local.set $10
   loop $for-loop|0
-   local.get $4
-   local.get $6
+   local.get $10
+   local.get $5
    i32.lt_s
-   local.set $7
-   local.get $7
+   local.set $11
+   local.get $11
    if
-    nop
-    local.get $4
-    i32.const 2
-    i32.mul
-    local.set $4
+    local.get $6
+    local.get $10
+    f32.const 0
+    call $~lib/typedarray/Float32Array#__set
+    local.get $10
+    i32.const 1
+    i32.add
+    local.set $10
     br $for-loop|0
    end
   end
-  local.get $4
-  i32.const 2
-  i32.div_s
-  local.set $4
-  local.get $4
-  i32.const 2
-  i32.div_s
-  local.set $7
   i32.const 0
-  local.get $7
-  call $~lib/staticarray/StaticArray<f32>#constructor
-  local.set $8
-  f32.const 0
-  local.set $9
-  i32.const 0
-  local.set $11
+  local.set $13
   loop $for-loop|1
-   local.get $11
-   local.get $7
+   local.get $13
+   local.get $5
    i32.lt_s
-   local.set $12
-   local.get $12
-   if
-    local.get $8
-    local.get $11
-    f32.const 0
-    call $~lib/staticarray/StaticArray<f32>#__set
-    local.get $11
-    i32.const 1
-    i32.add
-    local.set $11
-    br $for-loop|1
-   end
-  end
-  i32.const 1
-  local.set $11
-  loop $for-loop|2
+   local.set $11
    local.get $11
-   local.get $7
-   i32.lt_s
-   local.set $12
-   local.get $12
    if
     i32.const 0
-    local.set $13
-    loop $for-loop|3
-     local.get $13
-     local.get $7
+    local.set $12
+    loop $for-loop|2
+     local.get $12
+     local.get $5
      i32.lt_s
-     local.set $14
-     local.get $14
+     local.set $15
+     local.get $15
      if
-      local.get $5
-      local.get $13
+      local.get $0
+      local.get $12
       call $~lib/typedarray/Float32Array#__uget
-      local.get $5
+      local.get $0
+      local.get $12
       local.get $13
-      local.get $11
       i32.add
       call $~lib/typedarray/Float32Array#__uget
       f32.sub
-      local.set $15
-      local.get $8
-      local.get $11
-      local.get $8
-      local.get $11
-      call $~lib/staticarray/StaticArray<f32>#__get
-      local.get $15
-      local.get $15
+      local.set $14
+      local.get $6
+      local.get $13
+      local.get $6
+      local.get $13
+      call $~lib/typedarray/Float32Array#__get
+      local.get $14
+      local.get $14
       f32.mul
       f32.add
-      call $~lib/staticarray/StaticArray<f32>#__set
-      local.get $13
+      call $~lib/typedarray/Float32Array#__set
+      local.get $12
       i32.const 1
       i32.add
-      local.set $13
-      br $for-loop|3
+      local.set $12
+      br $for-loop|2
      end
     end
-    local.get $11
+    local.get $13
     i32.const 1
     i32.add
-    local.set $11
-    br $for-loop|2
+    local.set $13
+    br $for-loop|1
    end
   end
-  local.get $8
+  f32.const 0
+  local.set $16
+  local.get $6
   i32.const 0
   f32.const 1
-  call $~lib/staticarray/StaticArray<f32>#__set
-  local.get $8
+  call $~lib/typedarray/Float32Array#__set
   i32.const 1
-  f32.const 1
-  call $~lib/staticarray/StaticArray<f32>#__set
-  f32.const 0
-  local.set $15
-  i32.const 1
-  local.set $11
-  loop $for-loop|4
-   local.get $11
-   local.get $7
+  local.set $13
+  loop $for-loop|3
+   local.get $13
+   local.get $5
    i32.lt_s
-   local.set $12
-   local.get $12
+   local.set $11
+   local.get $11
    if
-    local.get $15
-    local.get $8
-    local.get $11
-    call $~lib/staticarray/StaticArray<f32>#__uget
+    local.get $16
+    local.get $6
+    local.get $13
+    call $~lib/typedarray/Float32Array#__uget
     f32.add
-    local.set $15
-    local.get $8
-    local.get $11
-    local.get $8
-    local.get $11
-    call $~lib/staticarray/StaticArray<f32>#__get
-    local.get $11
+    local.set $16
+    local.get $6
+    local.get $13
+    local.get $6
+    local.get $13
+    call $~lib/typedarray/Float32Array#__get
+    local.get $13
     f32.convert_i32_s
-    local.get $15
+    local.get $16
     f32.div
     f32.mul
-    call $~lib/staticarray/StaticArray<f32>#__set
-    local.get $11
+    call $~lib/typedarray/Float32Array#__set
+    local.get $13
     i32.const 1
     i32.add
-    local.set $11
-    br $for-loop|4
+    local.set $13
+    br $for-loop|3
    end
   end
   i32.const 2
-  local.set $10
-  block $for-break5
-   loop $for-loop|5
-    local.get $10
-    local.get $7
+  local.set $13
+  block $for-break4
+   loop $for-loop|4
+    local.get $13
+    local.get $5
     i32.lt_s
     local.set $11
     local.get $11
     if
-     local.get $8
-     local.get $10
-     call $~lib/staticarray/StaticArray<f32>#__uget
+     local.get $6
+     local.get $13
+     call $~lib/typedarray/Float32Array#__uget
      local.get $1
      f32.lt
      if
-      loop $while-continue|6
-       local.get $10
+      loop $while-continue|5
+       local.get $13
        i32.const 1
        i32.add
-       local.get $7
+       local.get $5
        i32.lt_s
        if (result i32)
-        local.get $8
-        local.get $10
+        local.get $6
+        local.get $13
         i32.const 1
         i32.add
-        call $~lib/staticarray/StaticArray<f32>#__uget
-        local.get $8
-        local.get $10
-        call $~lib/staticarray/StaticArray<f32>#__uget
+        call $~lib/typedarray/Float32Array#__uget
+        local.get $6
+        local.get $13
+        call $~lib/typedarray/Float32Array#__uget
         f32.lt
        else
         i32.const 0
        end
-       local.set $12
-       local.get $12
+       local.set $15
+       local.get $15
        if
-        local.get $10
+        local.get $13
         i32.const 1
         i32.add
-        local.set $10
-        br $while-continue|6
+        local.set $13
+        br $while-continue|5
        end
       end
-      f32.const 1
-      local.get $8
-      local.get $10
-      call $~lib/staticarray/StaticArray<f32>#__uget
-      f32.sub
+      f64.const 1
+      local.get $6
+      local.get $13
+      call $~lib/typedarray/Float32Array#__uget
+      f64.promote_f32
+      f64.sub
       local.set $9
-      br $for-break5
+      br $for-break4
      end
-     local.get $10
+     local.get $13
      i32.const 1
      i32.add
-     local.set $10
-     br $for-loop|5
+     local.set $13
+     br $for-loop|4
     end
    end
   end
-  local.get $10
-  local.get $7
+  local.get $13
+  local.get $5
   i32.eq
   if (result i32)
    i32.const 1
   else
-   local.get $8
-   local.get $10
-   call $~lib/staticarray/StaticArray<f32>#__uget
+   local.get $6
+   local.get $13
+   call $~lib/typedarray/Float32Array#__uget
    local.get $1
    f32.ge
   end
   if
-   f32.const -1
-   local.set $16
-   local.get $0
-   call $~lib/rt/pure/__release
-   local.get $5
-   call $~lib/rt/pure/__release
-   local.get $8
-   call $~lib/rt/pure/__release
-   local.get $16
-   return
+   i32.const -1
+   local.set $13
+   f64.const 0
+   local.set $9
   end
   local.get $9
   local.get $3
-  f32.lt
+  f64.promote_f32
+  f64.lt
   if
    f32.const -1
-   local.set $16
+   local.set $17
    local.get $0
    call $~lib/rt/pure/__release
-   local.get $5
+   local.get $6
    call $~lib/rt/pure/__release
-   local.get $8
-   call $~lib/rt/pure/__release
-   local.get $16
+   local.get $17
    return
   end
-  local.get $10
-  i32.const 1
-  i32.lt_s
-  if
-   local.get $10
-   local.set $11
-  else
-   local.get $10
-   i32.const 1
-   i32.sub
-   local.set $11
-  end
-  local.get $10
-  i32.const 1
-  i32.add
+  local.get $13
+  local.set $7
   local.get $7
-  i32.lt_s
+  i32.const -1
+  i32.ne
   if
-   local.get $10
+   local.get $7
+   i32.const 1
+   i32.lt_s
+   if
+    local.get $7
+    local.set $19
+   else
+    local.get $7
+    i32.const 1
+    i32.sub
+    local.set $19
+   end
+   local.get $7
    i32.const 1
    i32.add
-   local.set $12
-  else
-   local.get $10
-   local.set $12
-  end
-  local.get $11
-  local.get $10
-  i32.eq
-  if
-   local.get $8
-   local.get $10
-   call $~lib/staticarray/StaticArray<f32>#__uget
-   local.get $8
-   local.get $12
-   call $~lib/staticarray/StaticArray<f32>#__uget
-   f32.le
+   local.get $5
+   i32.lt_s
    if
-    local.get $10
-    f32.convert_i32_s
-    local.set $16
+    local.get $7
+    i32.const 1
+    i32.add
+    local.set $20
    else
-    local.get $12
-    f32.convert_i32_s
-    local.set $16
+    local.get $7
+    local.set $20
    end
-  else
-   local.get $12
-   local.get $10
+   local.get $19
+   local.get $7
    i32.eq
    if
-    local.get $8
-    local.get $10
-    call $~lib/staticarray/StaticArray<f32>#__uget
-    local.get $8
-    local.get $11
-    call $~lib/staticarray/StaticArray<f32>#__uget
+    local.get $6
+    local.get $7
+    call $~lib/typedarray/Float32Array#__uget
+    local.get $6
+    local.get $20
+    call $~lib/typedarray/Float32Array#__uget
     f32.le
     if
-     local.get $10
+     local.get $7
      f32.convert_i32_s
-     local.set $16
+     local.set $18
     else
-     local.get $11
+     local.get $20
      f32.convert_i32_s
-     local.set $16
+     local.set $18
     end
    else
-    local.get $8
-    local.get $11
-    call $~lib/staticarray/StaticArray<f32>#__uget
-    local.set $17
-    local.get $8
-    local.get $10
-    call $~lib/staticarray/StaticArray<f32>#__uget
-    local.set $18
-    local.get $8
-    local.get $12
-    call $~lib/staticarray/StaticArray<f32>#__uget
-    local.set $19
-    local.get $10
-    f32.convert_i32_s
-    local.get $19
-    local.get $17
-    f32.sub
-    f32.const 2
-    f32.const 2
-    local.get $18
-    f32.mul
-    local.get $19
-    f32.sub
-    local.get $17
-    f32.sub
-    f32.mul
-    f32.div
-    f32.add
-    local.set $16
+    local.get $20
+    local.get $7
+    i32.eq
+    if
+     local.get $6
+     local.get $7
+     call $~lib/typedarray/Float32Array#__uget
+     local.get $6
+     local.get $19
+     call $~lib/typedarray/Float32Array#__uget
+     f32.le
+     if
+      local.get $7
+      f32.convert_i32_s
+      local.set $18
+     else
+      local.get $19
+      f32.convert_i32_s
+      local.set $18
+     end
+    else
+     local.get $6
+     local.get $19
+     call $~lib/typedarray/Float32Array#__uget
+     local.set $21
+     local.get $6
+     local.get $7
+     call $~lib/typedarray/Float32Array#__uget
+     local.set $22
+     local.get $6
+     local.get $20
+     call $~lib/typedarray/Float32Array#__uget
+     local.set $23
+     local.get $7
+     f32.convert_i32_s
+     local.get $23
+     local.get $21
+     f32.sub
+     f32.const 2
+     f32.const 2
+     local.get $22
+     f32.mul
+     local.get $23
+     f32.sub
+     local.get $21
+     f32.sub
+     f32.mul
+     f32.div
+     f32.add
+     local.set $18
+    end
    end
+   local.get $2
+   f32.convert_i32_s
+   local.get $18
+   f32.div
+   local.set $8
   end
-  local.get $2
-  f32.convert_i32_s
-  local.get $16
-  f32.div
-  local.set $19
-  local.get $5
-  call $~lib/rt/pure/__release
   local.get $8
-  call $~lib/rt/pure/__release
+  local.set $17
   local.get $0
   call $~lib/rt/pure/__release
-  local.get $19
+  local.get $6
+  call $~lib/rt/pure/__release
+  local.get $17
  )
  (func $~lib/rt/pure/finalize (param $0 i32)
   i32.const 0
@@ -3851,51 +3856,36 @@
   local.get $1
   call $~lib/arraybuffer/ArrayBufferView~visit
  )
- (func $~lib/staticarray/StaticArray<f32>#__visit (param $0 i32) (param $1 i32)
-  i32.const 0
-  drop
- )
- (func $~lib/staticarray/StaticArray<f32>~visit (param $0 i32) (param $1 i32)
-  local.get $0
-  local.get $1
-  call $~lib/staticarray/StaticArray<f32>#__visit
- )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   block $invalid
-   block $~lib/staticarray/StaticArray<f32>
-    block $~lib/typedarray/Float32Array
-     block $~lib/arraybuffer/ArrayBufferView
-      block $~lib/string/String
-       block $~lib/arraybuffer/ArrayBuffer
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/typedarray/Float32Array $~lib/staticarray/StaticArray<f32> $invalid
-       end
+   block $~lib/typedarray/Float32Array
+    block $~lib/arraybuffer/ArrayBufferView
+     block $~lib/string/String
+      block $~lib/arraybuffer/ArrayBuffer
        local.get $0
-       local.get $1
-       call $~lib/arraybuffer/ArrayBuffer~visit
-       return
+       i32.const 8
+       i32.sub
+       i32.load
+       br_table $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/typedarray/Float32Array $invalid
       end
       local.get $0
       local.get $1
-      call $~lib/string/String~visit
+      call $~lib/arraybuffer/ArrayBuffer~visit
       return
      end
      local.get $0
      local.get $1
-     call $~lib/arraybuffer/ArrayBufferView~visit
+     call $~lib/string/String~visit
      return
     end
     local.get $0
     local.get $1
-    call $~lib/typedarray/Float32Array~visit
+    call $~lib/arraybuffer/ArrayBufferView~visit
     return
    end
    local.get $0
    local.get $1
-   call $~lib/staticarray/StaticArray<f32>~visit
+   call $~lib/typedarray/Float32Array~visit
    return
   end
   unreachable

@@ -18,6 +18,6 @@ declare module ASModule {
   export function __release(ptr: usize): void;
   export var __rtti_base: usize;
   export var Float32AudioBuffer_ID: u32;
-  export function YIN(float32AudioBuffer: usize, threshold: f32, sampleRate: i32, probabilityThreshold: f32): f32;
+  export function getPitch(float32AudioBuffer: usize, threshold: f32, sampleRate: i32, probabilityThreshold: f32, bufferSize: i32): f32;
 }
 export default ASModule;
