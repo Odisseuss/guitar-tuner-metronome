@@ -13,15 +13,6 @@ describe("GetProperty Helper Func", () => {
   });
 });
 
-describe("AbsoluteValOfDifference Helper Func", () => {
-  test("Returns correct result when result is positive", () => {
-    expect(functions.absoluteValOfDifference(10, 5)).toBe(5);
-  });
-  test("Returns correct result when result is negative", () => {
-    expect(functions.absoluteValOfDifference(5, 10)).toBe(5);
-  });
-});
-
 describe("DetermineStringBeingTuned Helper Func", () => {
   test("Returns correct string being tuned and color scheme for a tuning", () => {
     expect(functions.determineStringBeingTuned("Standard", 82)).toStrictEqual({
