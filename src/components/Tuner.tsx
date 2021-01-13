@@ -8,7 +8,6 @@ import detectors from "./Detectors";
 import { SVGProps, TunerProps, TunerState } from "../Interfaces";
 import PerformanceComparison from "./PerformanceComparison";
 import { AudioContext } from "standardized-audio-context";
-import { motion } from "framer-motion";
 import Ruler from "./Ruler";
 
 let SVGContainer = styled.div`
@@ -34,7 +33,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     this.state = {
       analyser: undefined,
       audioContext: undefined,
-      buffer: new Float32Array(4096),
+      buffer: new Float32Array(2048),
       frequency: 0,
       timeToCompute: 0,
       note: "-",
@@ -74,7 +73,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     let volume;
     let mediaStreamSource;
     let newAnalyser = this.state.analyser;
-    if (newAnalyser) newAnalyser.fftSize = 4096;
+    if (newAnalyser) newAnalyser.fftSize = 2048;
     if (this.state.audioContext) {
       volume = this.state.audioContext.createGain();
       volume.gain.value = 2;
@@ -92,7 +91,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
   }
   async findPitchWithYIN() {
     if (this.state.analyser) {
-      let buffer = new Float32Array(4096);
+      let buffer = new Float32Array(2048);
       this.state.analyser.getFloatTimeDomainData(buffer);
       this.setState({ buffer: buffer });
     }
@@ -168,17 +167,19 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     this.setState({ requestAnimationFrameID: rafID });
   }
   setStringCurrentlyBeingTuned(tuning: string, callback: FrameRequestCallback) {
-    if (this.state.frequency !== 0) {
-      let result = functions.determineStringBeingTuned(
+    if (this.state.frequency !== 0 && this.state.audioContext) {
+      let result = functions.determineStringBeingTuned2(
         tuning,
-        this.state.frequency
+        this.state.frequency,
+        this.state.buffer,
+        this.state.audioContext.sampleRate
       );
+
       this.props.setColors(result.currentColors);
       this.setState({
         currentStringBeingTuned: result.currentStringBeingTuned,
       });
     }
-
     requestAnimationFrame(callback);
   }
   liveInput() {
@@ -233,7 +234,12 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     volume.connect(context.destination);
     volume.gain.value = -0.95;
     oscillator.connect(volume);
-    oscillator.frequency.setValueAtTime(87, context.currentTime);
+    let oscillatorFreq = 83;
+    oscillator.frequency.setValueAtTime(oscillatorFreq, context.currentTime);
+    setInterval(() => {
+      oscillator.frequency.setValueAtTime(oscillatorFreq, context.currentTime);
+      oscillatorFreq += 1;
+    }, 50);
     oscillator.start(0);
     this.setState({
       audioContext: context,
@@ -248,7 +254,6 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     tuning: string
   ) {
     this.setState({ currentTuning: tuning });
-    console.log(this.state.currentTuning);
   }
 
   render() {
@@ -292,6 +297,21 @@ class Tuner extends React.Component<TunerProps, TunerState> {
               5) *
             this.state.rulerDistanceBetweenGradings
         : 0;
+
+    let tuningIndication;
+    if (this.state.frequency !== 0) {
+      if (this.state.frequency < this.state.currentStringBeingTuned.frequency) {
+        tuningIndication = "Tune Higher";
+      } else if (
+        this.state.frequency > this.state.currentStringBeingTuned.frequency
+      ) {
+        tuningIndication = "Tune Lower";
+      } else {
+        tuningIndication = "In Tune";
+      }
+    } else {
+      tuningIndication = "";
+    }
     return (
       <div style={{ height: "90%", width: "100%", position: "relative" }}>
         <TuningSelectionButtons onClick={this.handleTuningSelection} />
@@ -330,15 +350,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
               color: this.props.currentColors.primary,
             }}
           >
-            {this.state.frequency !== 0
-              ? this.state.frequency ===
-                this.state.currentStringBeingTuned.frequency
-                ? "GOOD"
-                : this.state.frequency >
-                  this.state.currentStringBeingTuned.frequency
-                ? "Lower"
-                : "Higher"
-              : ""}
+            {tuningIndication}
           </h1>
           <h1
             style={{
