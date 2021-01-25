@@ -1,140 +1,121 @@
 import { expose } from "comlink";
 export default {} as typeof Worker & { new (): Worker };
-class TapTempoDetector {
-  TOTAL_TAP_VALUES: number;
-  MS_UNTIL_CHAIN_RESET: number;
-  SKIPPED_TAP_THRESHOLD_LOW: number;
-  SKIPPED_TAP_THRESHOLD_HIGH: number;
-  sinceResetMS: number;
-  sinceResetMSOld: number;
-  beatMS: number;
-  resetMS: number;
-  lastTapMS: number;
-  lastTapSkipped: boolean;
-  beatProgress: number;
-  tapDurations: number[];
-  tapDurationIndex: number;
-  tapsInChain: number;
-  constructor() {
-    this.TOTAL_TAP_VALUES = 5;
-    this.MS_UNTIL_CHAIN_RESET = 2000;
-    this.SKIPPED_TAP_THRESHOLD_LOW = 1.75;
-    this.SKIPPED_TAP_THRESHOLD_HIGH = 2.75;
-    this.sinceResetMS = 0;
-    this.sinceResetMSOld = 0;
-    this.beatMS = 500;
-    this.resetMS = this.time();
-    this.lastTapMS = 0;
-    this.lastTapSkipped = false;
-    this.beatProgress = 0;
-    this.tapDurations = [0, 0, 0, 0, 0];
-    this.tapDurationIndex = 0;
-    this.tapsInChain = 0;
-  }
 
-  // Get current time in milliseconds
-  time() {
-    var d = new Date();
-    return d.getTime();
-  }
+// Declare variables
+let TOTAL_TAP_VALUES = 5;
+let MS_UNTIL_CHAIN_RESET = 2000;
+let SKIPPED_TAP_THRESHOLD_LOW = 1.75;
+let SKIPPED_TAP_THRESHOLD_HIGH = 2.75;
+let beatMS = 500;
+let resetMS = new Date().getTime();
+let lastTapMS = 0;
+let lastTapSkipped = false;
+let tapDurations = [0, 0, 0, 0, 0];
+let tapDurationIndex = 0;
+let tapsInChain = 0;
+let timerID = 0;
+let buttonDown = false;
+let buttonDownOld = false;
 
+// Expose functions through comlink
+let api = {
   // Get the average gaps between taps in a chain
   getAverageTapDuration() {
-    var amount = this.tapsInChain - 1;
-    if (amount > this.TOTAL_TAP_VALUES) {
-      amount = this.TOTAL_TAP_VALUES;
+    var amount = tapsInChain - 1;
+    if (amount > TOTAL_TAP_VALUES) {
+      amount = TOTAL_TAP_VALUES;
     }
 
     var runningTotal = 0;
     for (var i = 0; i < amount; i++) {
-      runningTotal += this.tapDurations[i];
+      runningTotal += tapDurations[i];
     }
 
     return Math.floor(runningTotal / amount);
-  }
+  },
   // Add another tap to chain
   tap(ms: number) {
-    this.tapsInChain++;
-    if (this.tapsInChain == 1) {
-      this.lastTapMS = ms;
+    tapsInChain++;
+    if (tapsInChain === 1) {
+      lastTapMS = ms;
       return -1;
     }
 
-    var duration = ms - this.lastTapMS;
+    var duration = ms - lastTapMS;
 
     // detect if last duration was unreasonable
     if (
-      this.tapsInChain > 1 &&
-      !this.lastTapSkipped &&
-      duration > this.beatMS * this.SKIPPED_TAP_THRESHOLD_LOW &&
-      duration < this.beatMS * this.SKIPPED_TAP_THRESHOLD_HIGH
+      tapsInChain > 1 &&
+      !lastTapSkipped &&
+      duration > beatMS * SKIPPED_TAP_THRESHOLD_LOW &&
+      duration < beatMS * SKIPPED_TAP_THRESHOLD_HIGH
     ) {
       duration = Math.floor(duration * 0.5);
-      this.lastTapSkipped = true;
+      lastTapSkipped = true;
     } else {
-      this.lastTapSkipped = false;
+      lastTapSkipped = false;
     }
 
-    this.tapDurations[this.tapDurationIndex] = duration;
-    this.tapDurationIndex++;
-    if (this.tapDurationIndex === this.TOTAL_TAP_VALUES) {
-      this.tapDurationIndex = 0;
+    tapDurations[tapDurationIndex] = duration;
+    tapDurationIndex++;
+    if (tapDurationIndex === TOTAL_TAP_VALUES) {
+      tapDurationIndex = 0;
     }
 
-    var newBeatMS = this.getAverageTapDuration();
+    var newBeatMS = api.getAverageTapDuration();
 
-    this.lastTapMS = ms;
+    lastTapMS = ms;
     return newBeatMS;
-  }
+  },
   // Resets the chain of taps
   resetChain(ms: number) {
-    this.tapsInChain = 0;
-    this.tapDurationIndex = 0;
-    this.resetMS = ms;
-    for (var i = 0; i < this.TOTAL_TAP_VALUES; i++) {
-      this.tapDurations[i] = 0;
+    tapsInChain = 0;
+    tapDurationIndex = 0;
+    resetMS = ms;
+    for (var i = 0; i < TOTAL_TAP_VALUES; i++) {
+      tapDurations[i] = 0;
     }
-  }
+  },
   // Tap tempo detection loop
   loop() {
-    var ms = this.time();
-    let buttonDown, buttonDownOld;
+    var ms = new Date().getTime();
     // if a tap has occured...
     if (buttonDown && !buttonDownOld) {
       // start a new tap chain if last tap was over an amount of beats ago
-      if (this.lastTapMS + this.MS_UNTIL_CHAIN_RESET < ms) {
-        this.resetChain(ms);
+      if (lastTapMS + MS_UNTIL_CHAIN_RESET < ms) {
+        api.resetChain(ms);
       }
 
-      var newBeatMS = this.tap(ms);
+      var newBeatMS = api.tap(ms);
       if (newBeatMS !== -1) {
-        this.beatMS = newBeatMS;
+        beatMS = newBeatMS;
       }
     }
 
-    this.beatProgress = (this.sinceResetMS / this.beatMS) % 1;
-
-    let tempo = 60000 / this.beatMS;
+    let tempo = Math.round(60000 / beatMS);
 
     // if a beat has occured since last loop()
-    this.sinceResetMS = ms - this.resetMS;
 
     // set old vars
     buttonDownOld = buttonDown;
-    this.sinceResetMSOld = this.sinceResetMS;
-    return tempo;
-  }
-  // setInterval(loop, 10);
-  // document.onmousedown = function () {
-  //   buttonDown = true;
-  // };
-
-  // document.onmouseup = function () {
-  //   buttonDown = false;
-  // };
-}
+    postMessage(tempo);
+  },
+  // API
+  start() {
+    timerID = setInterval(api.loop, 10);
+    console.log(timerID);
+  },
+  stop() {
+    clearInterval(timerID);
+  },
+  press() {
+    buttonDown = true;
+  },
+  release() {
+    buttonDown = false;
+  },
+};
 
 // Instantiate a detector and expose it with comlink
-let detector = new TapTempoDetector();
 
-expose(detector);
+expose(api);
