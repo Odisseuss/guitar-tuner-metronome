@@ -4,10 +4,15 @@ import CircularSlider from "@fseehawer/react-circular-slider";
 import styled from "styled-components";
 import MetronomeMeasureButton from "./MetronomeMeasureButtons";
 import MetronomeLogic from "./MetronomeScheduler.worker";
+import TapTempoWorker from "./DetectTapTempo.worker";
+import { wrap } from "comlink";
 import { AudioContext } from "standardized-audio-context";
 export interface MetronomeProps {
   primaryColor: string;
 }
+
+const comlinkWorkerInstance: Worker = new TapTempoWorker();
+const comlinkWorkerApi: any = wrap(comlinkWorkerInstance);
 
 let Container = styled.div`
   width: 100%;
@@ -44,6 +49,7 @@ export interface MetronomeState {
   noteLength: number;
   notesInQueue: Array<{ note: any; time: any }>;
   timerWorker: Worker;
+  tapTempoActive: boolean;
 }
 class Metronome extends React.Component<MetronomeProps, MetronomeState> {
   tempoValuesArray: number[];
@@ -63,6 +69,7 @@ class Metronome extends React.Component<MetronomeProps, MetronomeState> {
       notesInQueue: [],
       audioContext: new AudioContext(),
       timerWorker: new MetronomeLogic(),
+      tapTempoActive: false,
     };
     this.setBeatsPerMeasure = this.setBeatsPerMeasure.bind(this);
     this.setNoteType = this.setNoteType.bind(this);
@@ -160,6 +167,12 @@ class Metronome extends React.Component<MetronomeProps, MetronomeState> {
   }
   // Set what happens when a message is received from the worker thread
   componentDidMount() {
+    comlinkWorkerInstance.addEventListener("message", (ev) => {
+      if (ev.data && typeof ev.data === "number") {
+        this.setState({ tempo: ev.data });
+        console.log("Tempo changed to " + ev.data);
+      }
+    });
     let timerWorker = this.state.timerWorker;
     timerWorker.onmessage = (e) => {
       if (e.data === "tick") {
@@ -180,6 +193,34 @@ class Metronome extends React.Component<MetronomeProps, MetronomeState> {
       nextProps.primaryColor !== this.props.primaryColor
       ? true
       : false;
+  }
+  handleTempoTap(action: string) {
+    switch (action) {
+      case "press":
+        comlinkWorkerApi.press();
+        break;
+      case "release":
+        comlinkWorkerApi.release();
+        break;
+
+      default:
+        break;
+    }
+  }
+  handleStartTapTempo(action: string) {
+    switch (action) {
+      case "start":
+        this.setState({ tapTempoActive: true });
+        comlinkWorkerApi.start();
+        break;
+      case "stop":
+        this.setState({ tapTempoActive: false });
+        comlinkWorkerApi.stop();
+        break;
+
+      default:
+        break;
+    }
   }
   render() {
     return (
