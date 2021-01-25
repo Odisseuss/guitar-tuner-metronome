@@ -77,7 +77,7 @@ class Metronome extends React.Component<MetronomeProps, MetronomeState> {
     this.scheduleNote = this.scheduleNote.bind(this);
     this.scheduler = this.scheduler.bind(this);
     this.play = this.play.bind(this);
-    this.tempoValuesArray = [...Array(181).keys()].slice(30);
+    this.tempoValuesArray = [...Array(261).keys()].slice(30);
   }
   setBeatsPerMeasure(beatsPerMeasure: number) {
     this.setState({ beatsPerMeasure: beatsPerMeasure });
