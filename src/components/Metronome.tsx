@@ -137,7 +137,6 @@ class Metronome extends React.Component<MetronomeProps, MetronomeState> {
       this.state.nextNoteTime <
       this.state.audioContext.currentTime + this.state.scheduleAheadTime
     ) {
-      console.log(this.state.current16thNote);
       this.scheduleNote(this.state.current16thNote, this.state.nextNoteTime);
       this.nextNote();
     }
