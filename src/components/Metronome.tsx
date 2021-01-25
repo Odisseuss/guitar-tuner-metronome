@@ -210,6 +210,21 @@ class Metronome extends React.Component<MetronomeProps, MetronomeState> {
           playMetronome={this.play}
           setNoteType={this.setNoteType}
         />
+        <button
+          onMouseDown={() => this.handleTempoTap("press")}
+          onMouseUp={() => this.handleTempoTap("release")}
+        >
+          TAP TEMPO
+        </button>
+        <button
+          onClick={() =>
+            !this.state.tapTempoActive
+              ? this.handleStartTapTempo("start")
+              : this.handleStartTapTempo("stop")
+          }
+        >
+          Toggle tap tempo on or off
+        </button>
       </Container>
     );
   }
