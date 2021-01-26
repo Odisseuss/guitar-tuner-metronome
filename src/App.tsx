@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import Tuner from "./components/Tuner";
-import { AppProps, ContainerGradientProps } from "./Interfaces";
+import Tuner from "./pages/tuner/TunerContainer";
+import { AppProps, ContainerGradientProps } from "./types/Interfaces";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Metronome from "./components/Metronome";
-import Header from "./components/Header";
+import Metronome from "./pages/metronome/Metronome";
+import Header from "./common/components/Header";
 import styled from "styled-components";
-import colors from "./colors";
 
 let CenteredAppContainer = styled.div<ContainerGradientProps>`
   max-width: 650px;

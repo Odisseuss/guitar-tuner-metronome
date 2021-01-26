@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { ReactComponent as Metronome } from "../Metronome.svg";
+import { ReactComponent as Metronome } from "../../icons/Metronome.svg";
 import { Link, useLocation } from "react-router-dom";
 let HeaderContainer = styled.div`
   height: 10%;

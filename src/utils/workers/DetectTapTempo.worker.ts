@@ -7,7 +7,6 @@ let MS_UNTIL_CHAIN_RESET = 2000;
 let SKIPPED_TAP_THRESHOLD_LOW = 1.75;
 let SKIPPED_TAP_THRESHOLD_HIGH = 2.75;
 let beatMS = 500;
-let resetMS = new Date().getTime();
 let lastTapMS = 0;
 let lastTapSkipped = false;
 let tapDurations = [0, 0, 0, 0, 0];
@@ -71,7 +70,6 @@ let api = {
   resetChain(ms: number) {
     tapsInChain = 0;
     tapDurationIndex = 0;
-    resetMS = ms;
     for (var i = 0; i < TOTAL_TAP_VALUES; i++) {
       tapDurations[i] = 0;
     }

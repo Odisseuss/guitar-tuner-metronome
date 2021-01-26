@@ -1,14 +1,16 @@
 import React from "react";
 import styled from "styled-components";
-import TuningSelectionButtons from "./TuningSelectionButtons";
-import StringBeingTuned from "./StringBeingTuned";
-import { ReactComponent as Wave } from "../Wave.svg";
-import functions from "./Functions";
-import detectors from "./Detectors";
-import { SVGProps, TunerProps, TunerState } from "../Interfaces";
-import PerformanceComparison from "./PerformanceComparison";
+import TuningSelectionButtons from "./components/TuningSelectionButtons";
+import StringBeingTuned from "./components/StringBeingTuned";
+import { ReactComponent as Wave } from "../../icons/Wave.svg";
+import {
+  determineStringBeingTuned2,
+  noteFromPitch,
+} from "../../utils/functions";
+import { autocorellation, YIN } from "../../utils/detectors";
+import { SVGProps, TunerProps, TunerState } from "../../types/Interfaces";
 import { AudioContext } from "standardized-audio-context";
-import Ruler from "./Ruler";
+import Ruler from "./components/Ruler";
 
 let SVGContainer = styled.div`
   width: 100%;
@@ -99,9 +101,9 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     let ac = 0;
     let t0 = performance.now();
     if (this.state.audioContext) {
-      let YIN = await detectors.YIN();
-      if (YIN)
-        ac = YIN(
+      let yin = await YIN();
+      if (yin)
+        ac = yin(
           this.state.buffer,
           0.15,
           this.state.audioContext.sampleRate,
@@ -117,7 +119,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       let pitch = ac;
       this.setState({
         frequency: Math.floor(pitch),
-        note: functions.noteFromPitch(pitch),
+        note: noteFromPitch(pitch),
       });
     } else {
       this.setState({ frequency: 0, note: "-" });
@@ -140,7 +142,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     let t0 = performance.now();
     let ac = 0;
     if (this.state.audioContext)
-      ac = detectors.autocorellation(
+      ac = autocorellation(
         this.state.buffer,
         this.state.audioContext.sampleRate
       );
@@ -150,7 +152,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       let pitch = ac;
       this.setState({
         frequency: Math.floor(pitch),
-        note: functions.noteFromPitch(pitch),
+        note: noteFromPitch(pitch),
       });
     } else {
       this.setState({ frequency: 0, note: "-" });
@@ -168,7 +170,7 @@ class Tuner extends React.Component<TunerProps, TunerState> {
   }
   setStringCurrentlyBeingTuned(tuning: string, callback: FrameRequestCallback) {
     if (this.state.frequency !== 0 && this.state.audioContext) {
-      let result = functions.determineStringBeingTuned2(
+      let result = determineStringBeingTuned2(
         tuning,
         this.state.frequency,
         this.state.buffer,

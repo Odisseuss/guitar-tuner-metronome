@@ -1,5 +1,5 @@
 import * as React from "react";
-import detectors from "../components/Detectors";
+import { YIN, autocorellation } from "./detectors";
 // @ts-ignore
 import WavDecoder from "wav-decoder";
 // @ts-ignore
@@ -50,7 +50,7 @@ const PerformanceComparison: React.FunctionComponent<PerformanceComparisonProps>
       sound.then((buffer) => {
         let decoded = decode(buffer);
         let t0 = performance.now();
-        let pitch = detectors.autocorellation(decoded, 44100);
+        let pitch = autocorellation(decoded, 44100);
         let t1 = performance.now();
         let timeToExecute = t1 - t0;
         averageTimeToExecute += timeToExecute;
@@ -73,7 +73,7 @@ const PerformanceComparison: React.FunctionComponent<PerformanceComparisonProps>
     console.log(`AC average time to execute is: ${averageTimeToExecute}`);
   };
   let testYin = async () => {
-    let yin = await detectors.YIN().then((detector) => {
+    let yin = await YIN().then((detector) => {
       if (detector) {
         console.log("Running test for YIN");
         let pitchSamplesLabels = Object.keys(pitchSamples);

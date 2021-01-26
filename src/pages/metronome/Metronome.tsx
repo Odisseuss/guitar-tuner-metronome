@@ -2,9 +2,9 @@ import * as React from "react";
 // @ts-ignore
 import CircularSlider from "@fseehawer/react-circular-slider";
 import styled from "styled-components";
-import MetronomeMeasureButton from "./MetronomeMeasureButtons";
-import MetronomeLogic from "./MetronomeScheduler.worker";
-import TapTempoWorker from "./DetectTapTempo.worker";
+import MetronomeMeasureButton from "./components/MetronomeMeasureButtons";
+import MetronomeLogic from "../../utils/workers/MetronomeScheduler.worker";
+import TapTempoWorker from "../../utils/workers/DetectTapTempo.worker";
 import { wrap } from "comlink";
 import { AudioContext } from "standardized-audio-context";
 export interface MetronomeProps {

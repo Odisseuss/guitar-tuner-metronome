@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import Button from "./Button";
-import tunings from "../tunings";
+import tunings from "../../../types/tunings.d";
 
 let StyledContainer = styled.div`
   width: calc(100% - 30px);
