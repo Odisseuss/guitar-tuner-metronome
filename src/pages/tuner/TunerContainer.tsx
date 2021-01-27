@@ -1,34 +1,14 @@
 import React from "react";
-import styled from "styled-components";
-import TuningSelectionButtons from "./components/TuningSelectionButtons";
-import StringBeingTuned from "./components/StringBeingTuned";
-import { ReactComponent as Wave } from "../../icons/Wave.svg";
 import {
   determineStringBeingTuned2,
   noteFromPitch,
 } from "../../utils/functions";
-import { autocorellation, YIN } from "../../utils/detectors";
-import { SVGProps, TunerProps, TunerState } from "../../types/Interfaces";
+import { autocorellation, YIN, AC } from "../../utils/detectors";
+import { TunerProps, TunerState } from "../../types/Interfaces";
 import { AudioContext } from "standardized-audio-context";
-import Ruler from "./components/Ruler";
+import Tuner from "./components/Tuner";
 
-let SVGContainer = styled.div`
-  width: 100%;
-  height: 45%;
-  position: absolute;
-  bottom: 0;
-`;
-let StyledWaveSvg = styled(Wave)<SVGProps>`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  max-height: 373px;
-  --color-1: ${(props) => props.color_1};
-  --color-2: ${(props) => props.color_2};
-  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.15));
-`;
-
-class Tuner extends React.Component<TunerProps, TunerState> {
+class TunerContainer extends React.Component<TunerProps, TunerState> {
   yinDetector: any;
   constructor(props: TunerProps) {
     super(props);
@@ -101,14 +81,19 @@ class Tuner extends React.Component<TunerProps, TunerState> {
     let ac = 0;
     let t0 = performance.now();
     if (this.state.audioContext) {
-      let yin = await YIN();
-      if (yin)
-        ac = yin(
-          this.state.buffer,
-          0.15,
-          this.state.audioContext.sampleRate,
-          0.6
-        );
+      // Autocorellation
+      let autocorell = await AC();
+      if (autocorell)
+        ac = autocorell(this.state.buffer, this.state.audioContext.sampleRate);
+      // YIN
+      // let yin = await YIN();
+      // if (yin)
+      //   ac = yin(
+      //     this.state.buffer,
+      //     0.15,
+      //     this.state.audioContext.sampleRate,
+      //     0.6
+      //   );
     }
 
     let t1 = performance.now();
@@ -315,74 +300,22 @@ class Tuner extends React.Component<TunerProps, TunerState> {
       tuningIndication = "";
     }
     return (
-      <div style={{ height: "90%", width: "100%", position: "relative" }}>
-        <TuningSelectionButtons onClick={this.handleTuningSelection} />
-        <button onClick={this.oscillator}>Oscillator</button>
-        <button onClick={this.liveInput}>Live Input</button>
-        <StringBeingTuned
-          note={this.state.currentStringBeingTuned.letter}
-          frequency={this.state.currentStringBeingTuned.frequency}
-          noteProps={{ color: this.props.currentColors.primary }}
+      <React.Fragment>
+        <Tuner
+          currentColors={this.props.currentColors}
+          currentStringBeingTuned={this.state.currentStringBeingTuned}
+          frequency={this.state.frequency}
+          handleTuningSelection={this.handleTuningSelection}
+          rulerDivs={rulerDivs}
+          rulerTranslate={rulerTranslate}
+          startLiveInput={this.liveInput}
+          startOscillator={this.oscillator}
+          timeToCompute={this.state.timeToCompute}
+          tuningIndication={tuningIndication}
         />
-
-        <SVGContainer>
-          <h1
-            style={{
-              position: "absolute",
-              width: "100%",
-              top: "45%",
-              fontWeight: 400,
-              fontSize: 18,
-              textAlign: "center",
-              zIndex: 100,
-              color: this.props.currentColors.primary,
-            }}
-          >
-            {this.state.frequency}Hz
-          </h1>
-          <h1
-            style={{
-              position: "absolute",
-              width: "100%",
-              top: "50%",
-              fontWeight: 400,
-              fontSize: 18,
-              textAlign: "center",
-              zIndex: 100,
-              color: this.props.currentColors.primary,
-            }}
-          >
-            {tuningIndication}
-          </h1>
-          <h1
-            style={{
-              position: "absolute",
-              width: "100%",
-              top: "55%",
-              fontWeight: 400,
-              fontSize: 18,
-              textAlign: "center",
-              zIndex: 100,
-              color: this.props.currentColors.primary,
-            }}
-          >
-            {this.state.timeToCompute}
-          </h1>
-          {/* <PerformanceComparison></PerformanceComparison> */}
-          <Ruler
-            rulerGradings={rulerDivs}
-            gradingColors={this.props.currentColors.primary}
-            rulerTranslate={rulerTranslate}
-          />
-          <StyledWaveSvg
-            color_1={this.props.currentColors.gradient_lighter}
-            color_2={this.props.currentColors.gradient_darker}
-            style={{ position: "absolute", bottom: 0, left: 0 }}
-          />
-        </SVGContainer>
-      </div>
+      </React.Fragment>
     );
   }
 }
 
-export default Tuner;
+export default TunerContainer;
