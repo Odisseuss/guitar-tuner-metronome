@@ -1,4 +1,4 @@
-import { loadWasm } from "./wasmLoader";
+import { loadYinWasm, loadACWasm } from "./wasmLoader";
 
 export function autocorellation(buffer: Float32Array, sampleRate: number) {
   let rms = 0;
@@ -55,7 +55,12 @@ export function autocorellation(buffer: Float32Array, sampleRate: number) {
   return sampleRate / t0;
 }
 export function YIN() {
-  return loadWasm
+  return loadYinWasm
     .then((result) => result.YinDetector)
+    .catch((e) => console.log(e));
+}
+export function AC() {
+  return loadACWasm
+    .then((result) => result.ACDetector)
     .catch((e) => console.log(e));
 }

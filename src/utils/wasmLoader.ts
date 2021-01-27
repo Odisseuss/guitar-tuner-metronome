@@ -1,8 +1,9 @@
 import { instantiateStreaming } from "@assemblyscript/loader";
-import ModuleTypes from "../types/asTypes";
+import YinModuleTypes from "../types/yin-asTypes";
+import AcModuleTypes from "../types/ac-asTypes";
 
-export const loadWasm = instantiateStreaming<typeof ModuleTypes>(
-  fetch("optimized.wasm")
+export const loadYinWasm = instantiateStreaming<typeof YinModuleTypes>(
+  fetch("yin-optimized.wasm")
 ).then(({ exports }) =>
   Object.assign({}, exports, {
     YinDetector: (
@@ -26,6 +27,17 @@ export const loadWasm = instantiateStreaming<typeof ModuleTypes>(
     },
   })
 );
-// .catch((e) => {
-//   console.log(e);
-// });
+export const loadACWasm = instantiateStreaming<typeof AcModuleTypes>(
+  fetch("ac-optimized.wasm")
+).then(({ exports }) =>
+  Object.assign({}, exports, {
+    ACDetector: (arrayValues: Float32Array, sampleRate: number) => {
+      const pInput = exports.__retain(
+        exports.__newArray(exports.Float32AudioBuffer_ID, arrayValues)
+      );
+      const pOutput = exports.autocorellation(pInput, sampleRate);
+      exports.__release(pInput);
+      return pOutput;
+    },
+  })
+);
