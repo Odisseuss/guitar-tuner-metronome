@@ -1,40 +1,14 @@
 import * as React from "react";
 // @ts-ignore
-import CircularSlider from "@fseehawer/react-circular-slider";
-import styled from "styled-components";
-import MetronomeMeasureButton from "./components/MetronomeMeasureButtons";
 import MetronomeLogic from "../../utils/workers/MetronomeScheduler.worker";
 import TapTempoWorker from "../../utils/workers/DetectTapTempo.worker";
 import { wrap } from "comlink";
 import { AudioContext } from "standardized-audio-context";
+import Metronome from "./components/Metronome";
 export interface MetronomeProps {
   primaryColor: string;
 }
 
-const comlinkWorkerInstance: Worker = new TapTempoWorker();
-const comlinkWorkerApi: any = wrap(comlinkWorkerInstance);
-
-let Container = styled.div`
-  width: 100%;
-  height: 90%;
-  display: flex;
-  flex-direction: column;
-  padding-top: 20%;
-  justify-content: space-around;
-  align-items: center;
-  margin-top: -150px;
-  // Remove additional styling from knob
-  & div:nth-child(3) code {
-    font-weight: 600;
-    font-family: "Be Vietnam";
-  }
-  & div:nth-child(2) svg circle:first-child {
-    display: none;
-  }
-  & div:nth-child(2) svg svg {
-    display: none;
-  }
-`;
 export interface MetronomeState {
   beatsPerMeasure: number;
   tempo: number;
@@ -51,8 +25,13 @@ export interface MetronomeState {
   timerWorker: Worker;
   tapTempoActive: boolean;
 }
-class Metronome extends React.Component<MetronomeProps, MetronomeState> {
+class MetronomeContainer extends React.Component<
+  MetronomeProps,
+  MetronomeState
+> {
   tempoValuesArray: number[];
+  comlinkWorkerApi: any;
+  comlinkWorkerInstance: Worker;
   constructor(props: MetronomeProps) {
     super(props);
     this.state = {
@@ -77,7 +56,12 @@ class Metronome extends React.Component<MetronomeProps, MetronomeState> {
     this.scheduleNote = this.scheduleNote.bind(this);
     this.scheduler = this.scheduler.bind(this);
     this.play = this.play.bind(this);
+    this.handleSliderInputChange = this.handleSliderInputChange.bind(this);
+    this.handleStartTapTempo = this.handleStartTapTempo.bind(this);
+    this.handleTempoTap = this.handleTempoTap.bind(this);
     this.tempoValuesArray = [...Array(261).keys()].slice(30);
+    this.comlinkWorkerInstance = new TapTempoWorker();
+    this.comlinkWorkerApi = wrap(this.comlinkWorkerInstance);
   }
   setBeatsPerMeasure(beatsPerMeasure: number) {
     this.setState({ beatsPerMeasure: beatsPerMeasure });
@@ -166,7 +150,7 @@ class Metronome extends React.Component<MetronomeProps, MetronomeState> {
   }
   // Set what happens when a message is received from the worker thread
   componentDidMount() {
-    comlinkWorkerInstance.addEventListener("message", (ev) => {
+    this.comlinkWorkerInstance.addEventListener("message", (ev) => {
       if (ev.data && typeof ev.data === "number") {
         this.setState({ tempo: ev.data });
         console.log("Tempo changed to " + ev.data);
@@ -196,10 +180,10 @@ class Metronome extends React.Component<MetronomeProps, MetronomeState> {
   handleTempoTap(action: string) {
     switch (action) {
       case "press":
-        comlinkWorkerApi.press();
+        this.comlinkWorkerApi.press();
         break;
       case "release":
-        comlinkWorkerApi.release();
+        this.comlinkWorkerApi.release();
         break;
 
       default:
@@ -210,64 +194,38 @@ class Metronome extends React.Component<MetronomeProps, MetronomeState> {
     switch (action) {
       case "start":
         this.setState({ tapTempoActive: true });
-        comlinkWorkerApi.start();
+        this.comlinkWorkerApi.start();
         break;
       case "stop":
         this.setState({ tapTempoActive: false });
-        comlinkWorkerApi.stop();
+        this.comlinkWorkerApi.stop();
         break;
 
       default:
         break;
     }
   }
+  handleSliderInputChange(value: number) {
+    this.setState({ tempo: value });
+  }
   render() {
     return (
-      <Container>
-        <CircularSlider
-          label="Tempo"
-          labelColor={this.props.primaryColor}
-          labelFontSize="0px"
-          valueFontSize={"100px"}
-          verticalOffset={"2rem"}
-          progressColorFrom={this.props.primaryColor}
-          progressColorTo={this.props.primaryColor}
-          progressSize={35}
-          knobColor="#777777"
-          knobSize={85}
-          trackColor="#96969633"
-          trackSize={35}
-          width={"340"}
-          data={this.tempoValuesArray}
-          dataIndex={this.state.tempo - 30}
-          onChange={(value: string) => {
-            this.setState({ tempo: parseInt(value) });
-          }}
-        />
-        <MetronomeMeasureButton
+      <React.Fragment>
+        <Metronome
           beatsPerMeasure={this.state.beatsPerMeasure}
+          handleSliderInputChange={this.handleSliderInputChange}
+          handleStartTapTempo={this.handleStartTapTempo}
+          handleTapTempo={this.handleTempoTap}
+          play={this.play}
+          primaryColor={this.props.primaryColor}
           setBeatsPerMeasure={this.setBeatsPerMeasure}
-          playMetronome={this.play}
           setNoteType={this.setNoteType}
+          tapTempoActive={this.state.tapTempoActive}
+          tempo={this.state.tempo}
         />
-        <button
-          onMouseDown={() => this.handleTempoTap("press")}
-          onMouseUp={() => this.handleTempoTap("release")}
-        >
-          TAP TEMPO
-        </button>
-        <button
-          onClick={() =>
-            !this.state.tapTempoActive
-              ? this.handleStartTapTempo("start")
-              : this.handleStartTapTempo("stop")
-          }
-        >
-          Toggle tap tempo on or off
-        </button>
-      </Container>
+      </React.Fragment>
     );
   }
 }
 
-export default Metronome;
+export default MetronomeContainer;
