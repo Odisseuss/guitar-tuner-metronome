@@ -1,15 +1,31 @@
 {
   "targets": {
-    "debug": {
-      "binaryFile": "public/untouched.wasm",
-      "textFile": "public/untouched.wat",
+    "yin-debug": {
+      "binaryFile": "public/yin-untouched.wasm",
+      "textFile": "public/yin-untouched.wat",
       "sourceMap": true,
       "debug": true
     },
-    "release": {
-      "binaryFile": "public/optimized.wasm",
-      "textFile": "public/optimized.wat",
-      "tsdFile": "src/asTypes.ts",
+    "yin-release": {
+      "binaryFile": "public/yin-optimized.wasm",
+      "textFile": "public/yin-optimized.wat",
+      "tsdFile": "src/types/yin-asTypes.d.ts",
+      "sourceMap": true,
+      "optimizeLevel": 3,
+      "shrinkLevel": 0,
+      "converge": false,
+      "noAssert": true
+    },
+    "ac-debug": {
+      "binaryFile": "public/ac-untouched.wasm",
+      "textFile": "public/ac-untouched.wat",
+      "sourceMap": true,
+      "debug": true
+    },
+    "ac-release": {
+      "binaryFile": "public/ac-optimized.wasm",
+      "textFile": "public/ac-optimized.wat",
+      "tsdFile": "src/types/ac-asTypes.d.ts",
       "sourceMap": true,
       "optimizeLevel": 3,
       "shrinkLevel": 0,
