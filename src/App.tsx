@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Tuner from "./pages/tuner/TunerContainer";
 import { AppProps, ContainerGradientProps } from "./types/Interfaces";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Metronome from "./pages/metronome/Metronome";
+import Metronome from "./pages/metronome/MetronomeContainer";
 import Header from "./common/components/Header";
 import styled from "styled-components";
 
