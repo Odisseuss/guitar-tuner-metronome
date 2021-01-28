@@ -28,9 +28,18 @@
     "web-vitals": "^0.2.4",
     "worker-loader": "^3.0.7"
   },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "ts,tsx"
+    }
+  },
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
+    "watch": "npm-watch",
     "test": "jest --watchAll --detectOpenHandles --config=jest.config.js",
     "eject": "react-scripts eject",
     "asbuild:yin-untouched": "asc assembly/yin.ts --target yin-debug",
@@ -68,6 +77,7 @@
     "babel-jest": "^26.6.3",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "jest-fetch-mock": "^3.0.3",
+    "npm-watch": "^0.7.0",
     "onchange": "^7.1.0",
     "text-encoding": "^0.7.0",
     "workbox-build": "^6.0.2"

@@ -35,6 +35,7 @@ class TunerContainer extends React.Component<TunerProps, TunerState> {
     this.oscillator = this.oscillator.bind(this);
     this.handleTuningSelection = this.handleTuningSelection.bind(this);
   }
+  // Resize the ruler spacing on window resize
   componentDidMount() {
     window.addEventListener("resize", (event) => {
       let windowWidth = Math.min(
@@ -51,6 +52,7 @@ class TunerContainer extends React.Component<TunerProps, TunerState> {
       });
     });
   }
+  // Callback for initializing the stream source and running the find pitch algorithm
   gotStream(stream: MediaStream) {
     let volume;
     let mediaStreamSource;
@@ -82,18 +84,18 @@ class TunerContainer extends React.Component<TunerProps, TunerState> {
     let t0 = performance.now();
     if (this.state.audioContext) {
       // Autocorellation
-      let autocorell = await AC();
-      if (autocorell)
-        ac = autocorell(this.state.buffer, this.state.audioContext.sampleRate);
+      // let autocorell = await AC();
+      // if (autocorell)
+      //   ac = autocorell(this.state.buffer, this.state.audioContext.sampleRate);
       // YIN
-      // let yin = await YIN();
-      // if (yin)
-      //   ac = yin(
-      //     this.state.buffer,
-      //     0.15,
-      //     this.state.audioContext.sampleRate,
-      //     0.6
-      //   );
+      let yin = await YIN();
+      if (yin)
+        ac = yin(
+          this.state.buffer,
+          0.15,
+          this.state.audioContext.sampleRate,
+          0.6
+        );
     }
 
     let t1 = performance.now();
