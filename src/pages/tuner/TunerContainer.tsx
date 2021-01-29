@@ -57,13 +57,14 @@ class TunerContainer extends React.Component<TunerProps, TunerState> {
     let volume;
     let mediaStreamSource;
     let newAnalyser = this.state.analyser;
-    if (newAnalyser) newAnalyser.fftSize = 2048;
+    if (newAnalyser) newAnalyser.fftSize = 4096;
     if (this.state.audioContext) {
       volume = this.state.audioContext.createGain();
       volume.gain.value = 2;
       mediaStreamSource = this.state.audioContext.createMediaStreamSource(
         stream
       );
+
       mediaStreamSource.connect(volume);
       if (newAnalyser) volume.connect(newAnalyser);
     }
@@ -83,18 +84,18 @@ class TunerContainer extends React.Component<TunerProps, TunerState> {
     let ac = 0;
     let t0 = performance.now();
     if (this.state.audioContext) {
-      // Autocorellation
+      // Autocorellation 45-50ms per pass on ngrok
       // let autocorell = await AC();
       // if (autocorell)
       //   ac = autocorell(this.state.buffer, this.state.audioContext.sampleRate);
-      // YIN
+      // YIN 36-40ms per pass on ngrok server
       let yin = await YIN();
       if (yin)
         ac = yin(
           this.state.buffer,
           0.15,
           this.state.audioContext.sampleRate,
-          0.6
+          0.8
         );
     }
 
@@ -121,7 +122,7 @@ class TunerContainer extends React.Component<TunerProps, TunerState> {
   }
   findPitch() {
     if (this.state.analyser) {
-      let buffer = new Float32Array(4096);
+      let buffer = new Float32Array(2048);
       this.state.analyser.getFloatTimeDomainData(buffer);
       this.setState({ buffer: buffer });
     }
@@ -192,7 +193,6 @@ class TunerContainer extends React.Component<TunerProps, TunerState> {
       .getUserMedia({
         audio: {
           autoGainControl: false,
-          echoCancellation: false,
           noiseSuppression: false,
         },
       })
