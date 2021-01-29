@@ -40,12 +40,34 @@ let G: ColorScheme = {
 };
 export interface ColorSchemes {
   A: ColorScheme;
+  "A#": ColorScheme;
   B: ColorScheme;
+  "B#": ColorScheme;
   C: ColorScheme;
+  "C#": ColorScheme;
   D: ColorScheme;
+  "D#": ColorScheme;
   E: ColorScheme;
+  "E#": ColorScheme;
   F: ColorScheme;
+  "F#": ColorScheme;
   G: ColorScheme;
+  "G#": ColorScheme;
 }
-let colors: ColorSchemes = { A: A, B: B, C: C, D: D, E: E, F: F, G: G };
+let colors: ColorSchemes = {
+  A: A,
+  "A#": A,
+  B: B,
+  "B#": B,
+  C: C,
+  "C#": C,
+  D: D,
+  "D#": D,
+  E: E,
+  "E#": E,
+  F: F,
+  "F#": F,
+  G: G,
+  "G#": G,
+};
 export default colors;

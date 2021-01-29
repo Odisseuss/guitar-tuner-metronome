@@ -15,6 +15,11 @@ let StyledContainer = styled.div`
   justify-content: center;
   align-items: center;
 `;
+let Superscript = styled.sup`
+  font-size: 40px;
+  line-height: 144px;
+  font-weight: 400;
+`;
 let Note = styled.h1<NoteProps>`
   margin: 0;
   color: ${(props) => props.color};
@@ -32,9 +37,19 @@ let Frequency = styled.p`
 const StringBeingTuned: React.FunctionComponent<StringBeingTunedProps> = (
   props
 ) => {
+  let note = props.note.split("");
+  let renderedNote = <Note color={props.noteProps.color}>{props.note}</Note>;
+  if (note.length !== 1) {
+    renderedNote = (
+      <Note color={props.noteProps.color}>
+        {note[0]}
+        <Superscript>{note[1]}</Superscript>
+      </Note>
+    );
+  }
   return (
     <StyledContainer>
-      <Note color={props.noteProps.color}>{props.note}</Note>
+      {renderedNote}
       <Frequency>{props.frequency}Hz</Frequency>
     </StyledContainer>
   );

@@ -223,7 +223,7 @@ class TunerContainer extends React.Component<TunerProps, TunerState> {
     volume.connect(context.destination);
     volume.gain.value = -0.95;
     oscillator.connect(volume);
-    let oscillatorFreq = 83;
+    let oscillatorFreq = 60;
     oscillator.frequency.setValueAtTime(oscillatorFreq, context.currentTime);
     setInterval(() => {
       oscillator.frequency.setValueAtTime(oscillatorFreq, context.currentTime);

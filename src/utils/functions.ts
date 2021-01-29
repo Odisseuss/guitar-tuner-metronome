@@ -46,14 +46,28 @@ export function determineStringBeingTuned2(
   let tuningFrequencies = getProperty(
     getProperty(
       Tunings,
-      tuning as "Standard" | "Drop D" | "Double Drop D" | "DADGAD"
+      tuning as
+        | "Standard"
+        | "Drop D"
+        | "Double Drop D"
+        | "DADGAD"
+        | "Open D"
+        | "Open E"
+        | "Open G"
     ),
     "frequencies"
   );
   let tuningLetters = getProperty(
     getProperty(
       Tunings,
-      tuning as "Standard" | "Drop D" | "Double Drop D" | "DADGAD"
+      tuning as
+        | "Standard"
+        | "Drop D"
+        | "Double Drop D"
+        | "DADGAD"
+        | "Open D"
+        | "Open E"
+        | "Open G"
     ),
     "letters"
   );
