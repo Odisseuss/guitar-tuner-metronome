@@ -77,7 +77,7 @@ export function determineStringBeingTuned2(
   let minIndex = 0;
   let minDifference = 9999;
 
-  // This way is much better, but still needs to be improved.
+  // This way makes the ui change very often, but still needs to be improved.
   // It seems that when a sound seems to be the same note, but a different octave, the program will consider it to be the string being tuned,
   // instead of the next note
   Object.values(tuningFrequencies).map((stringFreq, index) => {
@@ -123,14 +123,28 @@ export function determineStringBeingTuned(tuning: string, frequency: number) {
   let tuningFrequencies = getProperty(
     getProperty(
       Tunings,
-      tuning as "Standard" | "Drop D" | "Double Drop D" | "DADGAD"
+      tuning as
+        | "Standard"
+        | "Drop D"
+        | "Double Drop D"
+        | "DADGAD"
+        | "Open D"
+        | "Open E"
+        | "Open G"
     ),
     "frequencies"
   );
   let tuningLetters = getProperty(
     getProperty(
       Tunings,
-      tuning as "Standard" | "Drop D" | "Double Drop D" | "DADGAD"
+      tuning as
+        | "Standard"
+        | "Drop D"
+        | "Double Drop D"
+        | "DADGAD"
+        | "Open D"
+        | "Open E"
+        | "Open G"
     ),
     "letters"
   );
@@ -138,6 +152,7 @@ export function determineStringBeingTuned(tuning: string, frequency: number) {
   let closestFreq = 0;
   let closestLetter = "-";
   let maxDifference = 9999;
+  let maxVariance = 2;
   let minIndex = 0;
   // Compute the absolute differences and figure out the minimum
   // Map over the list of string frequencies
@@ -145,7 +160,7 @@ export function determineStringBeingTuned(tuning: string, frequency: number) {
     // Compute the difference between the one detected, and the one known
     let diff = Math.abs(detectedFreq - stringFreq);
     // If the diffrence is smaller
-    if (diff < maxDifference && detectedFreq !== 0) {
+    if (diff < maxDifference + maxVariance && detectedFreq !== 0) {
       // We found the new minimum
       maxDifference = diff;
       // Get the index of the minimum
