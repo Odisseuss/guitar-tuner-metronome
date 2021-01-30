@@ -33,6 +33,7 @@ class TunerContainer extends React.Component<
       currentStringBeingTuned: { frequency: 0, letter: "-" },
       windowWidth: 650,
       rulerDistanceBetweenGradings: 27.083333333333332,
+      sameFrequencyCounter: 0,
     };
     this.gotStream = this.gotStream.bind(this);
     this.findPitch = this.findPitch.bind(this);
@@ -110,9 +111,21 @@ class TunerContainer extends React.Component<
       timeToCompute: t1 - t0,
     });
     if (ac !== -1 && ac > 30 && ac < 1048) {
-      let pitch = ac;
+      let pitch = Math.round(ac);
+      let absoluteDiffOfFreq = Math.abs(this.state.frequency - pitch);
+      if (Math.round(pitch) === this.state.frequency) {
+        this.setState((prevState) => {
+          if (prevState.sameFrequencyCounter + 1 === 10) {
+            console.log("IN TUNE");
+            return { sameFrequencyCounter: 0 };
+          }
+          return { sameFrequencyCounter: prevState.sameFrequencyCounter + 1 };
+        });
+      }
+      if (!(absoluteDiffOfFreq > 1) && !(absoluteDiffOfFreq < 20))
+        pitch = this.state.frequency;
       this.setState({
-        frequency: Math.floor(pitch),
+        frequency: pitch,
         note: noteFromPitch(pitch),
       });
     } else {
@@ -176,7 +189,9 @@ class TunerContainer extends React.Component<
         currentStringBeingTuned: result.currentStringBeingTuned,
       });
     }
-    requestAnimationFrame(callback);
+    setTimeout(() => {
+      requestAnimationFrame(callback);
+    }, 25);
   }
   liveInput() {
     if (this.state.isPlaying) {

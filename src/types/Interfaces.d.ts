@@ -42,6 +42,7 @@ export interface ITunerContainerState {
   timeToCompute: number;
   rulerDistanceBetweenGradings: number;
   windowWidth: number;
+  sameFrequencyCounter: number;
 }
 export interface ITunerContainerProps {
   setColors: Dispatch<
