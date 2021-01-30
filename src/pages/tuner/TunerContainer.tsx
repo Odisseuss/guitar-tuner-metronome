@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  determineStringBeingTuned,
   determineStringBeingTuned2,
   noteFromPitch,
 } from "../../utils/functions";
@@ -93,9 +94,9 @@ class TunerContainer extends React.Component<TunerProps, TunerState> {
       if (yin)
         ac = yin(
           this.state.buffer,
-          0.15,
+          0.3,
           this.state.audioContext.sampleRate,
-          0.8
+          0.95
         );
     }
 
@@ -158,11 +159,11 @@ class TunerContainer extends React.Component<TunerProps, TunerState> {
   }
   setStringCurrentlyBeingTuned(tuning: string, callback: FrameRequestCallback) {
     if (this.state.frequency !== 0 && this.state.audioContext) {
-      let result = determineStringBeingTuned2(
+      let result = determineStringBeingTuned(
         tuning,
-        this.state.frequency,
-        this.state.buffer,
-        this.state.audioContext.sampleRate
+        this.state.frequency
+        // this.state.buffer,
+        // this.state.audioContext.sampleRate
       );
 
       this.props.setColors(result.currentColors);
