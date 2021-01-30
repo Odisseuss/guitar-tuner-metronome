@@ -1,7 +1,6 @@
 import React from "react";
 import {
   determineStringBeingTuned,
-  determineStringBeingTuned2,
   noteFromPitch,
 } from "../../utils/functions";
 import { autocorellation, YIN, AC } from "../../utils/detectors";

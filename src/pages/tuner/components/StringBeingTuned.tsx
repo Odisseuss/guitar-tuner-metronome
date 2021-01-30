@@ -34,25 +34,25 @@ let Frequency = styled.p`
   font-size: 18px;
   font-weight: 400;
 `;
-const StringBeingTuned: React.FunctionComponent<StringBeingTunedProps> = (
-  props
-) => {
-  let note = props.note.split("");
-  let renderedNote = <Note color={props.noteProps.color}>{props.note}</Note>;
-  if (note.length !== 1) {
-    renderedNote = (
-      <Note color={props.noteProps.color}>
-        {note[0]}
-        <Superscript>{note[1]}</Superscript>
-      </Note>
+const StringBeingTuned: React.FunctionComponent<StringBeingTunedProps> = React.memo(
+  (props) => {
+    let note = props.note.split("");
+    let renderedNote = <Note color={props.noteProps.color}>{props.note}</Note>;
+    if (note.length !== 1) {
+      renderedNote = (
+        <Note color={props.noteProps.color}>
+          {note[0]}
+          <Superscript>{note[1]}</Superscript>
+        </Note>
+      );
+    }
+    return (
+      <StyledContainer>
+        {renderedNote}
+        <Frequency>{props.frequency}Hz</Frequency>
+      </StyledContainer>
     );
   }
-  return (
-    <StyledContainer>
-      {renderedNote}
-      <Frequency>{props.frequency}Hz</Frequency>
-    </StyledContainer>
-  );
-};
+);
 
 export default StringBeingTuned;
