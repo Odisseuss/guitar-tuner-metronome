@@ -5,13 +5,19 @@ import {
   noteFromPitch,
 } from "../../utils/functions";
 import { autocorellation, YIN, AC } from "../../utils/detectors";
-import { ITunerProps, ITunerState } from "../../types/Interfaces";
+import {
+  ITunerContainerState,
+  ITunerContainerProps,
+} from "../../types/Interfaces";
 import { AudioContext } from "standardized-audio-context";
 import Tuner from "./components/Tuner";
 
-class TunerContainer extends React.Component<ITunerProps, ITunerState> {
+class TunerContainer extends React.Component<
+  ITunerContainerProps,
+  ITunerContainerState
+> {
   yinDetector: any;
-  constructor(props: ITunerProps) {
+  constructor(props: ITunerContainerProps) {
     super(props);
     this.state = {
       analyser: undefined,

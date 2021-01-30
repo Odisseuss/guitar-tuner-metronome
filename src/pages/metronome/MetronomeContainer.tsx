@@ -5,16 +5,19 @@ import TapTempoWorker from "../../utils/workers/DetectTapTempo.worker";
 import { wrap } from "comlink";
 import { AudioContext } from "standardized-audio-context";
 import Metronome from "./components/Metronome";
-import { IMetronomeProps, IMetronomeState } from "../../types/Interfaces";
+import {
+  IMetronomeContainerState,
+  IMetronomeContainerProps,
+} from "../../types/Interfaces";
 
 class MetronomeContainer extends React.Component<
-  IMetronomeProps,
-  IMetronomeState
+  IMetronomeContainerProps,
+  IMetronomeContainerState
 > {
   tempoValuesArray: number[];
   comlinkWorkerApi: any;
   comlinkWorkerInstance: Worker;
-  constructor(props: IMetronomeProps) {
+  constructor(props: IMetronomeContainerProps) {
     super(props);
     this.state = {
       beatsPerMeasure: 4,
@@ -150,8 +153,8 @@ class MetronomeContainer extends React.Component<
     this.state.timerWorker.postMessage({ interval: this.state.lookahead });
   }
   shouldComponentUpdate(
-    nextProps: Readonly<IMetronomeProps>,
-    nextState: Readonly<IMetronomeState>
+    nextProps: Readonly<IMetronomeContainerProps>,
+    nextState: Readonly<IMetronomeContainerState>
   ) {
     return nextState.beatsPerMeasure !== this.state.beatsPerMeasure ||
       nextState.tempo !== this.state.tempo ||

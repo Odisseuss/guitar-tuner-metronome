@@ -4,8 +4,10 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Header from "./common/components/Header";
 import styled from "styled-components";
 import Loading from "./common/components/Loading";
-const Tuner = lazy(() => import("./pages/tuner/TunerContainer"));
-const Metronome = lazy(() => import("./pages/metronome/MetronomeContainer"));
+const TunerContainer = lazy(() => import("./pages/tuner/TunerContainer"));
+const MetronomeContainer = lazy(
+  () => import("./pages/metronome/MetronomeContainer")
+);
 
 let CenteredAppContainer = styled.div<IContainerGradientProps>`
   max-width: 650px;
@@ -50,14 +52,14 @@ const App: React.FunctionComponent<IAppProps> = () => {
                   navigateLocation={"/metronome"}
                   setColors={setCurrentColors}
                 />
-                <Tuner
+                <TunerContainer
                   setColors={setCurrentColors}
                   currentColors={currentColors}
                 />
               </Route>
               <Route path="/metronome">
                 <Header navigateLocation={"/"} setColors={setCurrentColors} />
-                <Metronome primaryColor={currentColors.primary} />
+                <MetronomeContainer primaryColor={currentColors.primary} />
               </Route>
             </Switch>
           </Suspense>

@@ -1,7 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 import { ColorScheme } from "../../../types/colors";
-import { CurrentStringData, SVGProps } from "../../../types/Interfaces";
+import {
+  ICurrentStringData,
+  ISVGProps,
+  ITunerProps,
+} from "../../../types/Interfaces";
 import { ReactComponent as Wave } from "../../../icons/Wave.svg";
 import Ruler from "./Ruler";
 import StringBeingTuned from "./StringBeingTuned";
@@ -13,7 +17,7 @@ let SVGContainer = styled.div`
   position: absolute;
   bottom: 0;
 `;
-let StyledWaveSvg = styled(Wave)<SVGProps>`
+let StyledWaveSvg = styled(Wave)<ISVGProps>`
   width: 100%;
   height: 100%;
   position: absolute;
@@ -22,26 +26,8 @@ let StyledWaveSvg = styled(Wave)<SVGProps>`
   --color-2: ${(props) => props.color_2};
   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.15));
 `;
-interface TunerProps {
-  handleTuningSelection: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    tuning: string
-  ) => void;
-  startOscillator: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => void;
-  startLiveInput: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => void;
-  currentStringBeingTuned: CurrentStringData;
-  currentColors: ColorScheme;
-  frequency: number;
-  tuningIndication: string;
-  rulerDivs: JSX.Element[];
-  timeToCompute: number;
-  rulerTranslate: number;
-}
-const Tuner: React.FunctionComponent<TunerProps> = ({
+
+const Tuner: React.FunctionComponent<ITunerProps> = ({
   handleTuningSelection,
   startLiveInput,
   startOscillator,
@@ -52,7 +38,7 @@ const Tuner: React.FunctionComponent<TunerProps> = ({
   rulerTranslate,
   tuningIndication,
   timeToCompute,
-}: TunerProps) => {
+}: ITunerProps) => {
   return (
     <div style={{ height: "90%", width: "100%", position: "relative" }}>
       <TuningSelectionButtons onClick={handleTuningSelection} />

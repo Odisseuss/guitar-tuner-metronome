@@ -3,6 +3,7 @@ import * as React from "react";
 import CircularSlider from "@fseehawer/react-circular-slider";
 import styled from "styled-components";
 import MetronomeMeasureButton from "./MetronomeMeasureButtons";
+import { IMetronomeProps } from "../../../types/Interfaces";
 
 let Container = styled.div`
   width: 100%;
@@ -25,19 +26,8 @@ let Container = styled.div`
     display: none;
   }
 `;
-interface MetronomeProps {
-  primaryColor: string;
-  tempo: number;
-  handleSliderInputChange: (value: number) => void;
-  beatsPerMeasure: number;
-  setBeatsPerMeasure: (beatsPerMeasure: number) => void;
-  play: () => "stop" | "play";
-  setNoteType: (noteType: 0 | 1 | 2) => void;
-  handleTapTempo: (action: string) => void;
-  handleStartTapTempo: (action: string) => void;
-  tapTempoActive: boolean;
-}
-const Metronome: React.FunctionComponent<MetronomeProps> = ({
+
+const Metronome: React.FunctionComponent<IMetronomeProps> = ({
   beatsPerMeasure,
   handleSliderInputChange,
   primaryColor,
