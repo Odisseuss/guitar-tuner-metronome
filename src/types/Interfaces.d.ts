@@ -6,15 +6,15 @@ import {
   IOscillatorNode,
 } from "standardized-audio-context";
 import { ColorScheme } from "./colors";
-export interface ContainerGradientProps {
+export interface IContainerGradientProps {
   color_1: string;
   color_2: string;
 }
-export interface SVGProps {
+export interface ISVGProps {
   color_1: string;
   color_2: string;
 }
-export interface TunerProps {
+export interface ITunerProps {
   setColors: Dispatch<
     SetStateAction<{
       primary: string;
@@ -25,12 +25,12 @@ export interface TunerProps {
   currentColors: ColorScheme;
 }
 
-export interface CurrentStringData {
+export interface ICurrentStringData {
   frequency: number;
   letter: string;
 }
 
-export interface TunerState {
+export interface ITunerState {
   note: string;
   frequency: number;
   audioContext: IAudioContext | undefined;
@@ -46,11 +46,11 @@ export interface TunerState {
   rulerDistanceBetweenGradings: number;
   windowWidth: number;
 }
-export interface MetronomeProps {
+export interface IMetronomeProps {
   primaryColor: string;
 }
 
-export interface MetronomeState {
+export interface IMetronomeState {
   beatsPerMeasure: number;
   tempo: number;
   isPlaying: boolean;
@@ -66,5 +66,5 @@ export interface MetronomeState {
   timerWorker: Worker;
   tapTempoActive: boolean;
 }
-export interface AppState {}
-export interface AppProps {}
+export interface IAppState {}
+export interface IAppProps {}

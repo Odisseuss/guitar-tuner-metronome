@@ -1,5 +1,5 @@
 import React, { useState, Suspense, lazy } from "react";
-import { AppProps, ContainerGradientProps } from "./types/Interfaces";
+import { IAppProps, IContainerGradientProps } from "./types/Interfaces";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Header from "./common/components/Header";
 import styled from "styled-components";
@@ -7,7 +7,7 @@ import Loading from "./common/components/Loading";
 const Tuner = lazy(() => import("./pages/tuner/TunerContainer"));
 const Metronome = lazy(() => import("./pages/metronome/MetronomeContainer"));
 
-let CenteredAppContainer = styled.div<ContainerGradientProps>`
+let CenteredAppContainer = styled.div<IContainerGradientProps>`
   max-width: 650px;
   max-height: 850px;
   width: 100%;
@@ -29,7 +29,7 @@ let Container = styled.div`
   background-color: #111;
 `;
 
-const App: React.FunctionComponent<AppProps> = () => {
+const App: React.FunctionComponent<IAppProps> = () => {
   let [currentColors, setCurrentColors] = useState({
     primary: "#F72640",
     gradient_darker: "#0F0910",
