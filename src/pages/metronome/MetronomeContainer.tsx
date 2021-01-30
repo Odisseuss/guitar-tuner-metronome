@@ -5,26 +5,8 @@ import TapTempoWorker from "../../utils/workers/DetectTapTempo.worker";
 import { wrap } from "comlink";
 import { AudioContext } from "standardized-audio-context";
 import Metronome from "./components/Metronome";
-export interface MetronomeProps {
-  primaryColor: string;
-}
+import { MetronomeProps, MetronomeState } from "../../types/Interfaces";
 
-export interface MetronomeState {
-  beatsPerMeasure: number;
-  tempo: number;
-  isPlaying: boolean;
-  startTime: number | null;
-  current16thNote: number;
-  lookahead: number;
-  scheduleAheadTime: number;
-  audioContext: AudioContext;
-  nextNoteTime: number;
-  noteResolution: number;
-  noteLength: number;
-  notesInQueue: Array<{ note: any; time: any }>;
-  timerWorker: Worker;
-  tapTempoActive: boolean;
-}
 class MetronomeContainer extends React.Component<
   MetronomeProps,
   MetronomeState

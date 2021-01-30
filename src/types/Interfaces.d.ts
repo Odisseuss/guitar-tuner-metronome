@@ -46,5 +46,25 @@ export interface TunerState {
   rulerDistanceBetweenGradings: number;
   windowWidth: number;
 }
+export interface MetronomeProps {
+  primaryColor: string;
+}
+
+export interface MetronomeState {
+  beatsPerMeasure: number;
+  tempo: number;
+  isPlaying: boolean;
+  startTime: number | null;
+  current16thNote: number;
+  lookahead: number;
+  scheduleAheadTime: number;
+  audioContext: IAudioContext;
+  nextNoteTime: number;
+  noteResolution: number;
+  noteLength: number;
+  notesInQueue: Array<{ note: any; time: any }>;
+  timerWorker: Worker;
+  tapTempoActive: boolean;
+}
 export interface AppState {}
 export interface AppProps {}
