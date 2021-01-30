@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import Tuner from "./pages/tuner/TunerContainer";
+import React, { useState, Suspense, lazy } from "react";
 import { AppProps, ContainerGradientProps } from "./types/Interfaces";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Metronome from "./pages/metronome/MetronomeContainer";
 import Header from "./common/components/Header";
 import styled from "styled-components";
+import Loading from "./common/components/Loading";
+const Tuner = lazy(() => import("./pages/tuner/TunerContainer"));
+const Metronome = lazy(() => import("./pages/metronome/MetronomeContainer"));
 
 let CenteredAppContainer = styled.div<ContainerGradientProps>`
   max-width: 650px;
@@ -42,22 +43,24 @@ const App: React.FunctionComponent<AppProps> = () => {
         color_2={currentColors.gradient_darker}
       >
         <Router>
-          <Switch>
-            <Route exact path="/">
-              <Header
-                navigateLocation={"/metronome"}
-                setColors={setCurrentColors}
-              />
-              <Tuner
-                setColors={setCurrentColors}
-                currentColors={currentColors}
-              />
-            </Route>
-            <Route path="/metronome">
-              <Header navigateLocation={"/"} setColors={setCurrentColors} />
-              <Metronome primaryColor={currentColors.primary} />
-            </Route>
-          </Switch>
+          <Suspense fallback={<Loading />}>
+            <Switch>
+              <Route exact path="/">
+                <Header
+                  navigateLocation={"/metronome"}
+                  setColors={setCurrentColors}
+                />
+                <Tuner
+                  setColors={setCurrentColors}
+                  currentColors={currentColors}
+                />
+              </Route>
+              <Route path="/metronome">
+                <Header navigateLocation={"/"} setColors={setCurrentColors} />
+                <Metronome primaryColor={currentColors.primary} />
+              </Route>
+            </Switch>
+          </Suspense>
         </Router>
       </CenteredAppContainer>
     </Container>
