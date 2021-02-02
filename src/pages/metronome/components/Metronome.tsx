@@ -1,6 +1,5 @@
 import * as React from "react";
-// @ts-ignore
-import CircularSlider from "@fseehawer/react-circular-slider";
+import CircularSlider from "../../../common/containers/CircularSlider";
 import styled from "styled-components";
 import MetronomeMeasureButton from "./MetronomeMeasureButtons";
 import { IMetronomeProps } from "../../../types/Interfaces";
@@ -14,17 +13,6 @@ let Container = styled.div`
   justify-content: space-around;
   align-items: center;
   margin-top: -150px;
-  // Remove additional styling from knob
-  & div:nth-child(3) code {
-    font-weight: 600;
-    font-family: "Be Vietnam";
-  }
-  & div:nth-child(2) svg circle:first-child {
-    display: none;
-  }
-  & div:nth-child(2) svg svg {
-    display: none;
-  }
 `;
 
 const Metronome: React.FunctionComponent<IMetronomeProps> = ({
@@ -54,7 +42,7 @@ const Metronome: React.FunctionComponent<IMetronomeProps> = ({
         knobSize={85}
         trackColor="#96969633"
         trackSize={35}
-        width={"340"}
+        width={340}
         data={[...Array(261).keys()].slice(30)}
         dataIndex={tempo - 30}
         onChange={(value: string) => {
