@@ -51,6 +51,7 @@ const App: React.FunctionComponent<IAppProps> = () => {
                 <Header
                   navigateLocation={"/metronome"}
                   setColors={setCurrentColors}
+                  menuColor={currentColors.gradient_lighter}
                 />
                 <TunerContainer
                   setColors={setCurrentColors}
@@ -58,7 +59,11 @@ const App: React.FunctionComponent<IAppProps> = () => {
                 />
               </Route>
               <Route path="/metronome">
-                <Header navigateLocation={"/"} setColors={setCurrentColors} />
+                <Header
+                  navigateLocation={"/"}
+                  setColors={setCurrentColors}
+                  menuColor={currentColors.gradient_lighter}
+                />
                 <MetronomeContainer primaryColor={currentColors.primary} />
               </Route>
             </Switch>
