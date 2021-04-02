@@ -28,6 +28,8 @@ export interface ITunerProps {
 	rulerTranslate: number;
 	isChromaticMode: boolean;
 	currentNote: string;
+	isManualStringSelectionMode: boolean;
+	cycleCurrentStringIndex: (type: 'up' | 'down') => void;
 }
 export interface ITunerContainerState {
 	note: string;
@@ -46,6 +48,8 @@ export interface ITunerContainerState {
 	windowWidth: number;
 	sameFrequencyCounter: number;
 	isChromatic: boolean;
+	isManualStringSelectionMode: boolean;
+	currentStringBeingTunedIndex: number;
 }
 export interface ITunerContainerProps {
 	setColors: Dispatch<

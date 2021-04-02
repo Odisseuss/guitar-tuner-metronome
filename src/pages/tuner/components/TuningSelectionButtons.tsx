@@ -26,7 +26,7 @@ export interface ButtonsProps {
 let Tunings = Object.keys(tunings);
 const TuningSelectionButtons: React.FunctionComponent<ButtonsProps> = React.memo(
 	props => {
-		const scrollRef = useHorizontalScroll()
+		const scrollRef = useHorizontalScroll();
 		let [selected, setSelected] = React.useState(0);
 		let buttons = Tunings.map((tuning, index) => {
 			let isSelected = index === selected;
@@ -45,8 +45,8 @@ const TuningSelectionButtons: React.FunctionComponent<ButtonsProps> = React.memo
 		});
 		return (
 			<StyledContainer
-			//@ts-ignore
-			    ref={scrollRef}
+				//@ts-ignore
+				ref={scrollRef}
 				style={{
 					visibility: props.isChromaticMode ? 'hidden' : 'visible',
 				}}

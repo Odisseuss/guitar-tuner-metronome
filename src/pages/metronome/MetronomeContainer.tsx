@@ -48,7 +48,6 @@ class MetronomeContainer extends React.Component<
 		this.tempoValuesArray = [...Array(261).keys()].slice(30);
 		this.comlinkWorkerInstance = new TapTempoWorker();
 		this.comlinkWorkerApi = wrap(this.comlinkWorkerInstance);
-		
 	}
 	setBeatsPerMeasure(beatsPerMeasure: number) {
 		this.setState({ beatsPerMeasure: beatsPerMeasure });
@@ -152,7 +151,6 @@ class MetronomeContainer extends React.Component<
 		let timerWorker = this.state.timerWorker;
 		timerWorker.onmessage = e => {
 			if (e.data === 'tick') {
-			
 				this.scheduler();
 			} else {
 				console.log(e.data);
@@ -169,19 +167,17 @@ class MetronomeContainer extends React.Component<
 			nextState.noteResolution !== this.state.noteResolution ||
 			nextState.tapTempoActive !== this.state.tapTempoActive ||
 			nextState.tempo !== this.state.tempo ||
-			nextProps.primaryColor !== this.props.primaryColor || nextState.isPlaying !== this.state.isPlaying
+			nextProps.primaryColor !== this.props.primaryColor ||
+			nextState.isPlaying !== this.state.isPlaying
 			? true
 			: false;
 	}
 	handleTempoTap(action: string) {
-		console.log('yoo')
 		switch (action) {
 			case 'press':
-				console.log('press')
 				this.comlinkWorkerApi.press();
 				break;
 			case 'release':
-				console.log('release')
 				this.comlinkWorkerApi.release();
 				break;
 

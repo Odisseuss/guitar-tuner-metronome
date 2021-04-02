@@ -6,6 +6,7 @@ import Ruler from './Ruler';
 import StringBeingTuned from './StringBeingTuned';
 import TuningSelectionButtons from './TuningSelectionButtons';
 import { ReactComponent as Play } from '../../../assets/icons/play.svg';
+import StringBeingTunedSelector from './StringBeingTunedSelector';
 let SVGContainer = styled.div`
 	width: 100%;
 	height: 45%;
@@ -35,6 +36,8 @@ const Tuner: React.FunctionComponent<ITunerProps> = ({
 	timeToCompute,
 	isChromaticMode,
 	currentNote,
+	isManualStringSelectionMode,
+	cycleCurrentStringIndex,
 }: ITunerProps) => {
 	return (
 		<div style={{ height: '90%', width: '100%', position: 'relative' }}>
@@ -51,16 +54,30 @@ const Tuner: React.FunctionComponent<ITunerProps> = ({
 					flexDirection: 'column',
 				}}
 			>
-				<StringBeingTuned
-					note={
-						isChromaticMode
-							? currentNote
-							: currentStringBeingTuned.letter
-					}
-					frequency={currentStringBeingTuned.frequency}
-					noteProps={{ color: currentColors.primary }}
-					toggleLiveInput={toggleLiveInput}
-				/>
+				{isManualStringSelectionMode ? (
+					<StringBeingTunedSelector
+						note={
+							isChromaticMode
+								? currentNote
+								: currentStringBeingTuned.letter
+						}
+						frequency={currentStringBeingTuned.frequency}
+						noteProps={{ color: currentColors.primary }}
+						toggleLiveInput={toggleLiveInput}
+						cycleCurrentStringIndex={cycleCurrentStringIndex}
+					/>
+				) : (
+					<StringBeingTuned
+						note={
+							isChromaticMode
+								? currentNote
+								: currentStringBeingTuned.letter
+						}
+						frequency={currentStringBeingTuned.frequency}
+						noteProps={{ color: currentColors.primary }}
+						toggleLiveInput={toggleLiveInput}
+					/>
+				)}
 			</div>
 
 			<SVGContainer>

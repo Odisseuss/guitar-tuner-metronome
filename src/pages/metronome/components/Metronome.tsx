@@ -4,6 +4,8 @@ import styled, { css, keyframes } from 'styled-components';
 import MetronomeMeasureButton from './MetronomeMeasureButtons';
 import { IMetronomeProps } from '../../../types/Interfaces';
 import { ReactComponent as TapIcon } from '../../../assets/icons/Tap.svg';
+//@ts-ignore
+import { Steps, Hints } from 'intro.js-react';
 let Container = styled.div`
 	width: 100%;
 	height: 90%;
@@ -27,8 +29,8 @@ const hvrBackPulseKeyframes = keyframes`
 	}
 `;
 const hvrBackPulseAnimation = css`
-  -webkit-animation: ${hvrBackPulseKeyframes} 0.8s linear infinite;
-  animation: ${hvrBackPulseKeyframes} 0.8s linear infinite;
+	-webkit-animation: ${hvrBackPulseKeyframes} 0.8s linear infinite;
+	animation: ${hvrBackPulseKeyframes} 0.8s linear infinite;
 `;
 let StyledTapIcon = styled(TapIcon)`
 	${hvrBackPulseAnimation}
@@ -43,7 +45,7 @@ const Metronome: React.FunctionComponent<IMetronomeProps> = ({
 	setNoteType,
 	handleTapTempo,
 	isPlaying,
-	tapTempoActive
+	tapTempoActive,
 }) => {
 	return (
 		<Container
@@ -72,12 +74,16 @@ const Metronome: React.FunctionComponent<IMetronomeProps> = ({
 					handleSliderInputChange(parseInt(value));
 				}}
 			/>
-			{tapTempoActive ? <StyledTapIcon style={{height: '80px'}}/> : <MetronomeMeasureButton
-				isPlaying={isPlaying}
-				beatsPerMeasure={beatsPerMeasure}
-				setBeatsPerMeasure={setBeatsPerMeasure}
-				playMetronome={play}
-			/>}
+			{tapTempoActive ? (
+				<StyledTapIcon style={{ height: '80px' }} />
+			) : (
+				<MetronomeMeasureButton
+					isPlaying={isPlaying}
+					beatsPerMeasure={beatsPerMeasure}
+					setBeatsPerMeasure={setBeatsPerMeasure}
+					playMetronome={play}
+				/>
+			)}
 		</Container>
 	);
 };

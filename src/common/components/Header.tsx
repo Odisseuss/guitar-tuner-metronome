@@ -24,22 +24,24 @@ let DropDown = styled.div`
 	position: absolute;
 	top: 100%;
 	right: 0;
-	width: 150px;
 	z-index: 9999;
 	opacity: 0;
 	transition: opacity 0.2s;
 `;
-let DropDownItem = styled.div`
+let DropDownItem = styled.span`
 	border: 1px solid transparent;
 	font-size: 0.875rem;
 	font-weight: 400;
-	padding: 10px 15px;
+	padding-left: 15px;
+	padding: 10px;
+	min-width: 110px;
 	position: relative;
-	color: #333;
+	color: #fff;
 	cursor: pointer;
 	margin: 0;
 	display: flex;
 	align-items: center;
+	white-space: nowrap;
 
 	& button {
 		cursor: pointer;
@@ -75,6 +77,7 @@ export interface HeaderProps {
 	tapTempoActive?: boolean;
 	toggleChromaticMode?: () => void;
 	chromaticMode?: () => void;
+	toggleManualStringSelectionMode?: () => void;
 }
 
 const Header: React.FunctionComponent<HeaderProps> = ({
@@ -86,6 +89,7 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 	tapTempoActive,
 	toggleChromaticMode,
 	chromaticMode,
+	toggleManualStringSelectionMode,
 }) => {
 	let [showMenu, setShowMenu] = React.useState(false);
 	let dropDownRef = React.useRef(null);
@@ -115,46 +119,44 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 	const renderDropdownItems = () => {
 		return location.pathname === '/' ? (
 			<>
-				<DropDownItem>
-					<button>Tutorial</button>
+				<DropDownItem>Tutorial</DropDownItem>
+				<DropDownItem
+					onClick={() => {
+						if (toggleChromaticMode && chromaticMode) {
+							toggleChromaticMode();
+						}
+					}}
+				>
+					Chromatic Mode
 				</DropDownItem>
-				<DropDownItem>
-					<button
-						onClick={() => {
-							if (toggleChromaticMode && chromaticMode) {
-								toggleChromaticMode();
-							}
-						}}
-					>
-						Chromatic Mode
-					</button>
+				<DropDownItem
+					onClick={() => {
+						if (toggleManualStringSelectionMode) {
+							toggleManualStringSelectionMode();
+						}
+					}}
+				>
+					Manual String Selection
 				</DropDownItem>
 			</>
 		) : (
 			<>
-				<DropDownItem>
-					<button
-						onClick={() => {
-							if (
-								handleStartTapTempo &&
-								tapTempoActive != undefined
-							)
-								!tapTempoActive
-									? handleStartTapTempo('start')
-									: handleStartTapTempo('stop');
-						}}
-					>
-						Tap Tempo
-					</button>
+				<DropDownItem
+					onClick={() => {
+						if (handleStartTapTempo && tapTempoActive != undefined)
+							!tapTempoActive
+								? handleStartTapTempo('start')
+								: handleStartTapTempo('stop');
+					}}
+				>
+					Tap Tempo
 				</DropDownItem>
-				<DropDownItem>
-					<button
-						onClick={() => {
-							if (cycleNoteType) cycleNoteType();
-						}}
-					>
-						Note Type
-					</button>
+				<DropDownItem
+					onClick={() => {
+						if (cycleNoteType) cycleNoteType();
+					}}
+				>
+					Note Type
 				</DropDownItem>
 			</>
 		);
@@ -185,7 +187,7 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 						outline: 'none',
 						border: 'none',
 						background: 'transparent',
-						padding: 0
+						padding: 0,
 					}}
 					onClick={toggleMenu}
 				>

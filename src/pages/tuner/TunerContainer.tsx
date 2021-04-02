@@ -2,6 +2,7 @@ import React from 'react';
 import {
 	determineStringBeingTuned,
 	getColorFromNote,
+	getCurrentStringBeingTuned,
 	noteFromPitch,
 } from '../../utils/functions';
 import { autocorellation, YIN, AC } from '../../utils/detectors';
@@ -39,6 +40,8 @@ class TunerContainer extends React.Component<
 			rulerDistanceBetweenGradings: 27.083333333333332,
 			sameFrequencyCounter: 0,
 			isChromatic: false,
+			isManualStringSelectionMode: false,
+			currentStringBeingTunedIndex: 1,
 		};
 		this.gotStream = this.gotStream.bind(this);
 		this.findPitch = this.findPitch.bind(this);
@@ -48,7 +51,11 @@ class TunerContainer extends React.Component<
 		this.handleTuningSelection = this.handleTuningSelection.bind(this);
 		this.toggleChromaticMode = this.toggleChromaticMode.bind(this);
 		this.chromaticMode = this.chromaticMode.bind(this);
-		this.liveInputModePicker = this.liveInputModePicker.bind(this)
+		this.liveInputModePicker = this.liveInputModePicker.bind(this);
+		this.toggleManualStringSelectionMode = this.toggleManualStringSelectionMode.bind(
+			this
+		);
+		this.cycleCurrentStringIndex = this.cycleCurrentStringIndex.bind(this);
 	}
 	// Resize the ruler spacing on window resize
 	componentDidMount() {
@@ -70,6 +77,11 @@ class TunerContainer extends React.Component<
 	}
 	toggleChromaticMode() {
 		this.setState(prevState => ({ isChromatic: !prevState.isChromatic }));
+	}
+	toggleManualStringSelectionMode() {
+		this.setState(prevState => ({
+			isManualStringSelectionMode: !prevState.isManualStringSelectionMode,
+		}));
 	}
 	// Callback for initializing the stream source and running the find pitch algorithm
 	gotStream(stream: MediaStream, liveInputModeCallback: () => void) {
@@ -190,13 +202,13 @@ class TunerContainer extends React.Component<
 		);
 		this.setState({ requestAnimationFrameID: rafID });
 	}
-	liveInputModePicker(){
-		if(this.state.isChromatic){
-			this.liveInput(this.chromaticMode)
-		}else{
-			this.liveInput(this.findPitchWithYIN)
+	liveInputModePicker() {
+		if (this.state.isChromatic) {
+			this.liveInput(this.chromaticMode);
+		} else {
+			this.liveInput(this.findPitchWithYIN);
 		}
-	} 
+	}
 	async chromaticMode() {
 		if (this.state.analyser) {
 			let buffer = new Float32Array(2048);
@@ -270,22 +282,33 @@ class TunerContainer extends React.Component<
 		tuning: string,
 		callback: FrameRequestCallback
 	) {
-		if (this.state.frequency !== 0 && this.state.audioContext) {
-			let result = determineStringBeingTuned(
-				tuning,
-				this.state.frequency
-				// this.state.buffer,
-				// this.state.audioContext.sampleRate
+		if (this.state.isManualStringSelectionMode) {
+			let result = getCurrentStringBeingTuned(
+				this.state.currentStringBeingTunedIndex,
+				tuning
 			);
-
 			this.props.setColors(result.currentColors);
 			this.setState({
 				currentStringBeingTuned: result.currentStringBeingTuned,
 			});
 		} else {
-			this.setState({
-				currentStringBeingTuned: { letter: '-', frequency: 0 },
-			});
+			if (this.state.frequency !== 0 && this.state.audioContext) {
+				let result = determineStringBeingTuned(
+					tuning,
+					this.state.frequency
+					// this.state.buffer,
+					// this.state.audioContext.sampleRate
+				);
+
+				this.props.setColors(result.currentColors);
+				this.setState({
+					currentStringBeingTuned: result.currentStringBeingTuned,
+				});
+			} else {
+				this.setState({
+					currentStringBeingTuned: { letter: '-', frequency: 0 },
+				});
+			}
 		}
 		setTimeout(() => {
 			requestAnimationFrame(callback);
@@ -379,7 +402,31 @@ class TunerContainer extends React.Component<
 	) {
 		this.setState({ currentTuning: tuning });
 	}
-
+	cycleCurrentStringIndex(type: 'up' | 'down') {
+		switch (type) {
+			case 'up':
+				this.setState(prevState => {
+					return {
+						currentStringBeingTunedIndex:
+							(prevState.currentStringBeingTunedIndex % 6) + 1,
+					};
+				});
+				break;
+			case 'down':
+				this.setState(prevState => {
+					let wrapAround =
+						prevState.currentStringBeingTunedIndex === 1
+							? 6
+							: prevState.currentStringBeingTunedIndex - 1;
+					return {
+						currentStringBeingTunedIndex: wrapAround,
+					};
+				});
+				break;
+			default:
+				break;
+		}
+	}
 	render() {
 		let rulerDivs = new Array(23).fill(0).map((line, index) => {
 			let height;
@@ -444,7 +491,6 @@ class TunerContainer extends React.Component<
 		} else {
 			tuningIndication = '';
 		}
-		console.log('CHROMATIC', this.state.isChromatic)
 		return (
 			<context.Provider value={this.state.isChromatic}>
 				<React.Fragment>
@@ -454,6 +500,9 @@ class TunerContainer extends React.Component<
 						menuColor={this.props.currentColors.gradient_lighter}
 						toggleChromaticMode={this.toggleChromaticMode}
 						chromaticMode={this.chromaticMode}
+						toggleManualStringSelectionMode={
+							this.toggleManualStringSelectionMode
+						}
 					/>
 					<Tuner
 						currentColors={this.props.currentColors}
@@ -465,13 +514,15 @@ class TunerContainer extends React.Component<
 						handleTuningSelection={this.handleTuningSelection}
 						rulerDivs={rulerDivs}
 						rulerTranslate={rulerTranslate}
-						toggleLiveInput={
-							this.liveInputModePicker
-						}
+						toggleLiveInput={this.liveInputModePicker}
 						startOscillator={this.oscillator}
 						timeToCompute={this.state.timeToCompute}
 						tuningIndication={tuningIndication}
 						isChromaticMode={this.state.isChromatic}
+						isManualStringSelectionMode={
+							this.state.isManualStringSelectionMode
+						}
+						cycleCurrentStringIndex={this.cycleCurrentStringIndex}
 					/>
 				</React.Fragment>
 			</context.Provider>

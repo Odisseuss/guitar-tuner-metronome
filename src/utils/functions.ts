@@ -163,7 +163,6 @@ export function determineStringBeingTuned(tuning: string, frequency: number) {
 	let maxDifference = 9999;
 	let maxVariance = 2;
 	let minIndex = 0;
-	console.log(detectedFreq);
 	// Compute the absolute differences and figure out the minimum
 	// Map over the list of string frequencies
 	Object.values(tuningFrequencies).map((stringFreq, index) => {
@@ -198,6 +197,56 @@ export function determineStringBeingTuned(tuning: string, frequency: number) {
 		currentStringBeingTuned: {
 			letter: closestLetter,
 			frequency: closestFreq,
+		},
+		currentColors: currentColors,
+	};
+}
+
+export function getCurrentStringBeingTuned(index: number, tuning: string) {
+	let tuningFrequencies = getProperty(
+		getProperty(
+			Tunings,
+			tuning as
+				| 'Standard'
+				| 'Drop D'
+				| 'Double Drop D'
+				| 'DADGAD'
+				| 'Open D'
+				| 'Open E'
+				| 'Open G'
+		),
+		'frequencies'
+	);
+	let tuningLetters = getProperty(
+		getProperty(
+			Tunings,
+			tuning as
+				| 'Standard'
+				| 'Drop D'
+				| 'Double Drop D'
+				| 'DADGAD'
+				| 'Open D'
+				| 'Open E'
+				| 'Open G'
+		),
+		'letters'
+	);
+	let currentLetter = getProperty(
+		tuningLetters,
+		`string_${index}` as keyof Letters
+	);
+	let currentFreq = getProperty(
+		tuningFrequencies,
+		`string_${index}` as keyof Frequencies
+	);
+	let currentColors = getProperty(
+		colors,
+		currentLetter as keyof ColorSchemes
+	);
+	return {
+		currentStringBeingTuned: {
+			letter: currentLetter,
+			frequency: currentFreq,
 		},
 		currentColors: currentColors,
 	};
