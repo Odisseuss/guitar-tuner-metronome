@@ -152,7 +152,6 @@ let Tunings = {
 	'Open D': OpenD,
 	'Open E': OpenE,
 	'Open G': OpenG,
-	Chromatic: Standard,
 };
 
 export default Tunings;

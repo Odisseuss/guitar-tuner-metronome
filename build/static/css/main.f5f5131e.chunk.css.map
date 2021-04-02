@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/index.css"],"names":[],"mappings":"AAAA,KACE,QAAS,CACT,oBAAyB,CACzB,mCAAqC,CACrC,kCAAmC,CACnC,iCACF","file":"main.f5f5131e.chunk.css","sourcesContent":["body {\n  margin: 0;\n  color: #ffffff !important;\n  font-family: \"Be Vietnam\", sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n"]}
