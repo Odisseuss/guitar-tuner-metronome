@@ -78,7 +78,6 @@ const Labels = ({
 };
 
 Labels.propTypes = {
-  label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   labelColor: PropTypes.string,
   labelBottom: PropTypes.bool,
