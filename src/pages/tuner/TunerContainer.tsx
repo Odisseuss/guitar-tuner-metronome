@@ -33,10 +33,8 @@ class TunerContainer extends React.Component<
 			audioContext: undefined,
 			buffer: new Float32Array(2048),
 			frequency: 0,
-			timeToCompute: 0,
 			note: '-',
 			mediaStreamSource: undefined,
-			oscillatorNode: undefined,
 			isPlaying: false,
 			requestAnimationFrameID: undefined,
 			currentTuning: 'Standard',
@@ -86,11 +84,18 @@ class TunerContainer extends React.Component<
 		});
 	}
 	toggleChromaticMode() {
-		this.setState(prevState => ({ isChromatic: !prevState.isChromatic }));
+		if (this.state.requestAnimationFrameID)
+			cancelAnimationFrame(this.state.requestAnimationFrameID);
+		this.setState(prevState => ({
+			isPlaying: false,
+			isChromatic: !prevState.isChromatic,
+			isManualStringSelectionMode: false,
+		}));
 	}
 	toggleManualStringSelectionMode() {
 		this.setState(prevState => ({
 			isManualStringSelectionMode: !prevState.isManualStringSelectionMode,
+			isChromatic: false,
 		}));
 	}
 	// Callback for initializing the stream source and running the find pitch algorithm
@@ -118,72 +123,76 @@ class TunerContainer extends React.Component<
 	}
 
 	async findPitchWithYIN() {
-		if (this.state.analyser) {
-			let buffer = new Float32Array(2048);
-			this.state.analyser.getFloatTimeDomainData(buffer);
-			this.setState({ buffer: buffer });
-		}
+		if (this.state.isPlaying) {
+			if (this.state.analyser) {
+				let buffer = new Float32Array(2048);
+				this.state.analyser.getFloatTimeDomainData(buffer);
+				this.setState({ buffer: buffer });
+			}
 
-		let ac = 0;
-		let t0 = performance.now();
-		if (this.state.audioContext) {
-			let yin = await YIN();
-			if (yin)
-				ac = yin(
-					this.state.buffer,
-					0.5,
-					this.state.audioContext.sampleRate,
-					0.9
+			let ac = 0;
+			if (this.state.audioContext) {
+				let yin = await YIN();
+				if (yin)
+					ac = yin(
+						this.state.buffer,
+						0.5,
+						this.state.audioContext.sampleRate,
+						0.9
+					);
+			}
+			if (ac > 30 && ac < 1048) {
+				let pitch = Math.round(ac);
+				let absoluteDiffOfFreq = Math.abs(
+					this.state.currentStringBeingTuned.frequency - pitch
 				);
-		}
-
-		let t1 = performance.now();
-		this.setState({
-			timeToCompute: t1 - t0,
-		});
-		if (ac > 30 && ac < 1048) {
-			let pitch = Math.round(ac);
-			let absoluteDiffOfFreq = Math.abs(this.state.frequency - pitch);
-			if (pitch === this.state.currentStringBeingTuned.frequency) {
-				this.setState(prevState => {
-					if (prevState.sameFrequencyCounter + 1 === 10) {
-						let shouldPlaySound = prevState.shouldPlaySound;
-						if (shouldPlaySound) {
-							shouldPlaySound = false;
-							this.dingSound.play();
+				if (absoluteDiffOfFreq >= 1 && absoluteDiffOfFreq < 2) {
+					pitch = this.state.frequency;
+				}
+				this.setState({
+					frequency: pitch,
+					note: noteFromPitch(pitch),
+				});
+				if (pitch === this.state.currentStringBeingTuned.frequency) {
+					this.setState(prevState => {
+						if (prevState.sameFrequencyCounter + 1 === 10) {
+							let shouldPlaySound = prevState.shouldPlaySound;
+							if (shouldPlaySound) {
+								shouldPlaySound = false;
+								this.dingSound.play();
+							}
+							return {
+								sameFrequencyCounter: 0,
+								shouldPlaySound,
+							};
 						}
 						return {
-							sameFrequencyCounter: 0,
-							shouldPlaySound,
+							sameFrequencyCounter:
+								prevState.sameFrequencyCounter + 1,
+							shouldPlaySound: prevState.shouldPlaySound,
 						};
-					}
-					return {
-						sameFrequencyCounter:
-							prevState.sameFrequencyCounter + 1,
-						shouldPlaySound: prevState.shouldPlaySound,
-					};
-				});
-			} else {
-				this.setState({
-					sameFrequencyCounter: 0,
-				});
+					});
+				} else {
+					this.setState({
+						sameFrequencyCounter: 0,
+					});
+				}
+			} else if (ac !== -1) {
+				this.setState({ frequency: 0, note: '-' });
 			}
-			if (!(absoluteDiffOfFreq > 1) && !(absoluteDiffOfFreq < 20))
-				pitch = this.state.frequency;
-			this.setState({
-				frequency: pitch,
-				note: noteFromPitch(pitch),
-			});
-		} else if (ac !== -1) {
-			this.setState({ frequency: 0, note: '-' });
+			let rafID = window.requestAnimationFrame(() =>
+				this.setStringCurrentlyBeingTuned(
+					this.state.currentTuning,
+					this.findPitchWithYIN
+				)
+			);
+			this.setState(prevState => ({
+				requestAnimationFrameID:
+					prevState.requestAnimationFrameID !== undefined
+						? prevState.requestAnimationFrameID
+						: rafID,
+			}));
 		}
-		let rafID = window.requestAnimationFrame(() =>
-			this.setStringCurrentlyBeingTuned(
-				this.state.currentTuning,
-				this.findPitchWithYIN
-			)
-		);
-		this.setState({ requestAnimationFrameID: rafID });
 	}
 	findPitch() {
 		if (this.state.analyser) {
@@ -192,14 +201,12 @@ class TunerContainer extends React.Component<
 			this.setState({ buffer: buffer });
 		}
 
-		let t0 = performance.now();
 		let ac = 0;
 		if (this.state.audioContext)
 			ac = autocorellation(
 				this.state.buffer,
 				this.state.audioContext.sampleRate
 			);
-		let t1 = performance.now();
 
 		if (ac !== -1) {
 			let pitch = ac;
@@ -210,16 +217,18 @@ class TunerContainer extends React.Component<
 		} else {
 			this.setState({ frequency: 0, note: '-' });
 		}
-		this.setState({
-			timeToCompute: t1 - t0,
-		});
 		let rafID = window.requestAnimationFrame(() =>
 			this.setStringCurrentlyBeingTuned(
 				this.state.currentTuning,
 				this.findPitch
 			)
 		);
-		this.setState({ requestAnimationFrameID: rafID });
+		this.setState(prevState => ({
+			requestAnimationFrameID:
+				prevState.requestAnimationFrameID !== undefined
+					? prevState.requestAnimationFrameID
+					: rafID,
+		}));
 	}
 	liveInputModePicker() {
 		if (this.state.isChromatic) {
@@ -229,59 +238,46 @@ class TunerContainer extends React.Component<
 		}
 	}
 	async chromaticMode() {
-		if (this.state.analyser) {
-			let buffer = new Float32Array(2048);
-			this.state.analyser.getFloatTimeDomainData(buffer);
-			this.setState({ buffer: buffer });
-		}
-
-		let ac = 0;
-		let t0 = performance.now();
-		if (this.state.audioContext) {
-			let yin = await YIN();
-			if (yin)
-				ac = yin(
-					this.state.buffer,
-					0.3,
-					this.state.audioContext.sampleRate,
-					0.95
-				);
-		}
-
-		let t1 = performance.now();
-		this.setState({
-			timeToCompute: t1 - t0,
-		});
-		if (ac !== -1 && ac > 30 && ac < 1048) {
-			let pitch = Math.round(ac);
-			let absoluteDiffOfFreq = Math.abs(this.state.frequency - pitch);
-			if (Math.round(pitch) === this.state.frequency) {
-				this.setState(prevState => {
-					if (prevState.sameFrequencyCounter + 1 === 10) {
-						return { sameFrequencyCounter: 0 };
-					}
-					return {
-						sameFrequencyCounter:
-							prevState.sameFrequencyCounter + 1,
-					};
-				});
+		if (this.state.isPlaying) {
+			if (this.state.analyser) {
+				let buffer = new Float32Array(2048);
+				this.state.analyser.getFloatTimeDomainData(buffer);
+				this.setState({ buffer: buffer });
 			}
-			if (!(absoluteDiffOfFreq > 1) && !(absoluteDiffOfFreq < 20))
-				pitch = this.state.frequency;
-			this.setState({
-				frequency: pitch,
-				note: noteFromPitch(pitch),
-			});
-		} else {
-			this.setState({ frequency: 0, note: '-' });
+
+			let ac = 0;
+			if (this.state.audioContext) {
+				let yin = await YIN();
+				if (yin)
+					ac = yin(
+						this.state.buffer,
+						0.5,
+						this.state.audioContext.sampleRate,
+						0.9
+					);
+			}
+			if (ac !== -1 && ac > 30 && ac < 2000) {
+				let pitch = Math.round(ac);
+				this.setState({
+					frequency: pitch,
+					note: noteFromPitch(pitch),
+				});
+			} else {
+				this.setState({ frequency: 0, note: '-' });
+			}
+			let rafID = window.requestAnimationFrame(() =>
+				this.setColorsFromNote(
+					noteFromPitch(Math.round(ac)),
+					this.chromaticMode
+				)
+			);
+			this.setState(prevState => ({
+				requestAnimationFrameID:
+					prevState.requestAnimationFrameID !== undefined
+						? prevState.requestAnimationFrameID
+						: rafID,
+			}));
 		}
-		let rafID = window.requestAnimationFrame(() =>
-			this.setColorsFromNote(
-				noteFromPitch(Math.round(ac)),
-				this.chromaticMode
-			)
-		);
-		this.setState({ requestAnimationFrameID: rafID });
 	}
 	setColorsFromNote(note: string, callback: FrameRequestCallback) {
 		if (this.state.frequency !== 0 && this.state.audioContext) {
@@ -333,7 +329,6 @@ class TunerContainer extends React.Component<
 	liveInput(liveInputMode: () => void) {
 		if (this.state.isPlaying) {
 			//stop playing and return
-			this.state.oscillatorNode?.stop();
 			if (this.state.requestAnimationFrameID) {
 				window.cancelAnimationFrame(this.state.requestAnimationFrameID);
 			}
@@ -344,11 +339,8 @@ class TunerContainer extends React.Component<
 			});
 			this.setState({
 				isPlaying: false,
-				oscillatorNode: undefined,
-				isManualStringSelectionMode: false,
 				analyser: undefined,
 				frequency: 0,
-				timeToCompute: 0,
 				note: '-',
 			});
 		} else {
@@ -356,6 +348,7 @@ class TunerContainer extends React.Component<
 			this.setState({
 				audioContext: context,
 				analyser: context.createAnalyser(),
+				isPlaying: true,
 			});
 			navigator.mediaDevices
 				.getUserMedia({
@@ -498,7 +491,6 @@ class TunerContainer extends React.Component<
 						setColors={this.props.setColors}
 						menuColor={this.props.currentColors.gradient_lighter}
 						toggleChromaticMode={this.toggleChromaticMode}
-						chromaticMode={this.chromaticMode}
 						toggleManualStringSelectionMode={
 							this.toggleManualStringSelectionMode
 						}
@@ -515,7 +507,6 @@ class TunerContainer extends React.Component<
 						rulerDivs={rulerDivs}
 						rulerTranslate={rulerTranslate}
 						toggleLiveInput={this.liveInputModePicker}
-						timeToCompute={this.state.timeToCompute}
 						tuningIndication={tuningIndication}
 						isChromaticMode={this.state.isChromatic}
 						isManualStringSelectionMode={

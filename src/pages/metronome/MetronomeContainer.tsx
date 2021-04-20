@@ -150,15 +150,12 @@ class MetronomeContainer extends React.Component<
 		this.comlinkWorkerInstance.addEventListener('message', ev => {
 			if (ev.data && typeof ev.data === 'number') {
 				this.setState({ tempo: ev.data });
-				// console.log('Tempo changed to ' + ev.data);
 			}
 		});
 		let timerWorker = this.state.timerWorker;
 		timerWorker.onmessage = e => {
 			if (e.data === 'tick') {
 				this.scheduler();
-			} else {
-				console.log(e.data);
 			}
 		};
 		this.setState({ timerWorker: timerWorker });

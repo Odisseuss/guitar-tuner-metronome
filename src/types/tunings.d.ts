@@ -144,6 +144,60 @@ let OpenG: Tuning = {
 		string_6: 'D',
 	},
 };
+let OpenA: Tuning = {
+	frequencies: {
+		string_1: 82,
+		string_2: 110,
+		string_3: 164,
+		string_4: 220,
+		string_5: 277,
+		string_6: 329,
+	},
+	letters: {
+		string_1: 'E',
+		string_2: 'A',
+		string_3: 'E',
+		string_4: 'A',
+		string_5: 'C#',
+		string_6: 'E',
+	},
+};
+let OpenC6: Tuning = {
+	frequencies: {
+		string_1: 65,
+		string_2: 110,
+		string_3: 130,
+		string_4: 196,
+		string_5: 261,
+		string_6: 329,
+	},
+	letters: {
+		string_1: 'C',
+		string_2: 'A',
+		string_3: 'C',
+		string_4: 'G',
+		string_5: 'C',
+		string_6: 'E',
+	},
+};
+let DropC: Tuning = {
+	frequencies: {
+		string_1: 65,
+		string_2: 98,
+		string_3: 130,
+		string_4: 174,
+		string_5: 220,
+		string_6: 293,
+	},
+	letters: {
+		string_1: 'C',
+		string_2: 'G',
+		string_3: 'C',
+		string_4: 'F',
+		string_5: 'A',
+		string_6: 'D',
+	},
+};
 let Tunings = {
 	Standard: Standard,
 	'Drop D': DropD,
@@ -152,6 +206,9 @@ let Tunings = {
 	'Open D': OpenD,
 	'Open E': OpenE,
 	'Open G': OpenG,
+	'Open A': OpenA,
+	'Open C6': OpenC6,
+	'Drop C': DropC,
 };
 
 export default Tunings;

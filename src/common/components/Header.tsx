@@ -96,7 +96,6 @@ export interface HeaderProps {
 	cycleNoteType?: () => void;
 	tapTempoActive?: boolean;
 	toggleChromaticMode?: () => void;
-	chromaticMode?: () => void;
 	toggleManualStringSelectionMode?: () => void;
 	setTutorialEnabled: () => void;
 	noteType?: number;
@@ -110,7 +109,6 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 	cycleNoteType,
 	tapTempoActive,
 	toggleChromaticMode,
-	chromaticMode,
 	toggleManualStringSelectionMode,
 	setTutorialEnabled,
 	noteType,
@@ -155,7 +153,7 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 				</DropDownItem>
 				<DropDownItem
 					onClick={() => {
-						if (toggleChromaticMode && chromaticMode) {
+						if (toggleChromaticMode) {
 							toggleChromaticMode();
 						}
 					}}

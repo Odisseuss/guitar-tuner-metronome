@@ -32,7 +32,6 @@ const Tuner: React.FunctionComponent<ITunerProps> = ({
 	rulerDivs,
 	rulerTranslate,
 	tuningIndication,
-	timeToCompute,
 	isChromaticMode,
 	currentNote,
 	isManualStringSelectionMode,
@@ -74,6 +73,7 @@ const Tuner: React.FunctionComponent<ITunerProps> = ({
 								? currentNote
 								: currentStringBeingTuned.letter
 						}
+						isChromaticMode={isChromaticMode}
 						frequency={currentStringBeingTuned.frequency}
 						noteProps={{ color: currentColors.primary }}
 						toggleLiveInput={toggleLiveInput}
@@ -96,20 +96,23 @@ const Tuner: React.FunctionComponent<ITunerProps> = ({
 				>
 					{frequency}Hz
 				</h1>
-				<h1
-					style={{
-						position: 'absolute',
-						width: '100%',
-						top: '55%',
-						fontWeight: 400,
-						fontSize: 18,
-						textAlign: 'center',
-						zIndex: 100,
-						color: currentColors.primary,
-					}}
-				>
-					{tuningIndication}
-				</h1>
+				{!isChromaticMode && (
+					<h1
+						style={{
+							position: 'absolute',
+							width: '100%',
+							top: '55%',
+							fontWeight: 400,
+							fontSize: 18,
+							textAlign: 'center',
+							zIndex: 100,
+							color: currentColors.primary,
+						}}
+					>
+						{tuningIndication}
+					</h1>
+				)}
+
 				{!isChromaticMode && (
 					<Ruler
 						rulerGradings={rulerDivs}

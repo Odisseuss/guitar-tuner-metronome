@@ -21,7 +21,6 @@ export interface ITunerProps {
 	frequency: number;
 	tuningIndication: string;
 	rulerDivs: JSX.Element[];
-	timeToCompute: number;
 	rulerTranslate: number;
 	isChromaticMode: boolean;
 	currentNote: string;
@@ -35,12 +34,10 @@ export interface ITunerContainerState {
 	analyser: IAnalyserNode<IAudioContext> | undefined;
 	buffer: Float32Array;
 	mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext> | undefined;
-	oscillatorNode: IOscillatorNode<IAudioContext> | undefined;
 	isPlaying: boolean;
 	requestAnimationFrameID: number | undefined;
 	currentTuning: string;
 	currentStringBeingTuned: CurrentStringData;
-	timeToCompute: number;
 	rulerDistanceBetweenGradings: number;
 	windowWidth: number;
 	sameFrequencyCounter: number;

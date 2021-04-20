@@ -8,6 +8,7 @@ export interface StringBeingTunedProps {
 	toggleLiveInput: (
 		event: React.MouseEvent<HTMLDivElement, MouseEvent>
 	) => void;
+	isChromaticMode: boolean;
 }
 export interface NoteProps {
 	color?: string;
@@ -58,7 +59,9 @@ const StringBeingTuned: React.FunctionComponent<StringBeingTunedProps> = React.m
 				onClick={props.toggleLiveInput}
 			>
 				{renderedNote}
-				<Frequency>{props.frequency}Hz</Frequency>
+				{!props.isChromaticMode && (
+					<Frequency>{props.frequency}Hz</Frequency>
+				)}
 			</StyledContainer>
 		);
 	}
