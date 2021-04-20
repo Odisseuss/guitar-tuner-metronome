@@ -53,7 +53,10 @@ const StringBeingTuned: React.FunctionComponent<StringBeingTunedProps> = React.m
 			);
 		}
 		return (
-			<StyledContainer onClick={props.toggleLiveInput}>
+			<StyledContainer
+				className='string-being-tuned-container'
+				onClick={props.toggleLiveInput}
+			>
 				{renderedNote}
 				<Frequency>{props.frequency}Hz</Frequency>
 			</StyledContainer>

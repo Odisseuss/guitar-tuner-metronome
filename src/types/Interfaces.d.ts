@@ -13,9 +13,6 @@ export interface ITunerProps {
 		event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
 		tuning: string
 	) => void;
-	startOscillator: (
-		event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-	) => void;
 	toggleLiveInput: (
 		event: React.MouseEvent<HTMLDivElement, MouseEvent>
 	) => void;
@@ -50,6 +47,8 @@ export interface ITunerContainerState {
 	isChromatic: boolean;
 	isManualStringSelectionMode: boolean;
 	currentStringBeingTunedIndex: number;
+	shouldPlaySound: boolean;
+	tutorialEnabled: boolean;
 }
 export interface ITunerContainerProps {
 	setColors: Dispatch<
@@ -91,6 +90,7 @@ export interface IMetronomeContainerState {
 	notesInQueue: Array<{ note: any; time: any }>;
 	timerWorker: Worker;
 	tapTempoActive: boolean;
+	tutorialEnabled: boolean;
 }
 export interface IMetronomeProps {
 	primaryColor: string;

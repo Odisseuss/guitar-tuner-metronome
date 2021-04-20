@@ -45,6 +45,7 @@ const TuningSelectionButtons: React.FunctionComponent<ButtonsProps> = React.memo
 		});
 		return (
 			<StyledContainer
+				className={'tuning-buttons'}
 				//@ts-ignore
 				ref={scrollRef}
 				style={{

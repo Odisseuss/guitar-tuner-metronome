@@ -5,8 +5,8 @@ import { ReactComponent as Wave } from '../../../assets/icons/Wave.svg';
 import Ruler from './Ruler';
 import StringBeingTuned from './StringBeingTuned';
 import TuningSelectionButtons from './TuningSelectionButtons';
-import { ReactComponent as Play } from '../../../assets/icons/play.svg';
 import StringBeingTunedSelector from './StringBeingTunedSelector';
+
 let SVGContainer = styled.div`
 	width: 100%;
 	height: 45%;
@@ -26,7 +26,6 @@ let StyledWaveSvg = styled(Wave)<ISVGProps>`
 const Tuner: React.FunctionComponent<ITunerProps> = ({
 	handleTuningSelection,
 	toggleLiveInput,
-	startOscillator,
 	currentStringBeingTuned,
 	currentColors,
 	frequency,
@@ -40,12 +39,14 @@ const Tuner: React.FunctionComponent<ITunerProps> = ({
 	cycleCurrentStringIndex,
 }: ITunerProps) => {
 	return (
-		<div style={{ height: '90%', width: '100%', position: 'relative' }}>
+		<div
+			style={{ height: '90%', width: '100%', position: 'relative' }}
+			className='tuner-container'
+		>
 			<TuningSelectionButtons
 				onClick={handleTuningSelection}
 				isChromaticMode={isChromaticMode}
 			/>
-			{/* <button onClick={startOscillator}>Oscillator</button> */}
 			<div
 				style={{
 					display: 'flex',
@@ -80,7 +81,7 @@ const Tuner: React.FunctionComponent<ITunerProps> = ({
 				)}
 			</div>
 
-			<SVGContainer>
+			<SVGContainer className='ruler-container'>
 				<h1
 					style={{
 						position: 'absolute',
@@ -109,20 +110,6 @@ const Tuner: React.FunctionComponent<ITunerProps> = ({
 				>
 					{tuningIndication}
 				</h1>
-				{/* <h1
-					style={{
-						position: 'absolute',
-						width: '100%',
-						top: '55%',
-						fontWeight: 400,
-						fontSize: 18,
-						textAlign: 'center',
-						zIndex: 100,
-						color: currentColors.primary,
-					}}
-				>
-					{timeToCompute}
-				</h1> */}
 				{!isChromaticMode && (
 					<Ruler
 						rulerGradings={rulerDivs}

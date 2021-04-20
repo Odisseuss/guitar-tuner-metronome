@@ -10,6 +10,9 @@ import {
 	IMetronomeContainerProps,
 } from '../../types/Interfaces';
 import Header from '../../common/components/Header';
+//@ts-ignore
+import { Steps } from 'intro.js-react';
+import { metronomeSteps } from '../../utils/introSteps';
 
 class MetronomeContainer extends React.Component<
 	IMetronomeContainerProps,
@@ -35,6 +38,7 @@ class MetronomeContainer extends React.Component<
 			audioContext: new AudioContext(),
 			timerWorker: new MetronomeLogic(),
 			tapTempoActive: false,
+			tutorialEnabled: false,
 		};
 		this.setBeatsPerMeasure = this.setBeatsPerMeasure.bind(this);
 		this.cycleNoteType = this.cycleNoteType.bind(this);
@@ -48,6 +52,7 @@ class MetronomeContainer extends React.Component<
 		this.tempoValuesArray = [...Array(261).keys()].slice(30);
 		this.comlinkWorkerInstance = new TapTempoWorker();
 		this.comlinkWorkerApi = wrap(this.comlinkWorkerInstance);
+		this.setTutorialEnabled = this.setTutorialEnabled.bind(this);
 	}
 	setBeatsPerMeasure(beatsPerMeasure: number) {
 		this.setState({ beatsPerMeasure: beatsPerMeasure });
@@ -168,7 +173,8 @@ class MetronomeContainer extends React.Component<
 			nextState.tapTempoActive !== this.state.tapTempoActive ||
 			nextState.tempo !== this.state.tempo ||
 			nextProps.primaryColor !== this.props.primaryColor ||
-			nextState.isPlaying !== this.state.isPlaying
+			nextState.isPlaying !== this.state.isPlaying ||
+			nextState.tutorialEnabled !== this.state.tutorialEnabled
 			? true
 			: false;
 	}
@@ -204,10 +210,29 @@ class MetronomeContainer extends React.Component<
 	handleSliderInputChange(value: number) {
 		this.setState({ tempo: value });
 	}
+	setTutorialEnabled() {
+		this.setState({ tutorialEnabled: true });
+	}
 	render() {
 		const { tempo, tapTempoActive } = this.state;
+
+		let tutorialEnabled =
+			this.state.tutorialEnabled ||
+			localStorage.getItem('METRONOME_TUTORIAL_COMPLETE') !== 'true';
 		return (
 			<React.Fragment>
+				<Steps
+					enabled={tutorialEnabled}
+					steps={metronomeSteps}
+					initialStep={0}
+					onExit={() => {
+						localStorage.setItem(
+							'METRONOME_TUTORIAL_COMPLETE',
+							'true'
+						);
+						this.setState({ tutorialEnabled: false });
+					}}
+				/>
 				<Header
 					navigateLocation={'/'}
 					setColors={this.props.setColors}
@@ -215,6 +240,8 @@ class MetronomeContainer extends React.Component<
 					handleStartTapTempo={this.handleStartTapTempo}
 					tapTempoActive={tapTempoActive}
 					cycleNoteType={this.cycleNoteType}
+					setTutorialEnabled={this.setTutorialEnabled}
+					noteType={this.state.noteResolution}
 				/>
 				<Metronome
 					beatsPerMeasure={this.state.beatsPerMeasure}

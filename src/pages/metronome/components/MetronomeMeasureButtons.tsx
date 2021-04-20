@@ -47,10 +47,10 @@ const MetronomeMeasureButtons: React.FunctionComponent<MetronomeMeasureButtonsPr
 	beatsPerMeasure,
 	setBeatsPerMeasure,
 	playMetronome,
-	isPlaying
+	isPlaying,
 }) => {
 	return (
-		<ColumnContainer>
+		<ColumnContainer className='metronome-controls-container'>
 			<h2 style={{ textAlign: 'center' }}>Beats</h2>
 			<RowContainer>
 				<StyledButton
@@ -86,7 +86,7 @@ const MetronomeMeasureButtons: React.FunctionComponent<MetronomeMeasureButtonsPr
 					playMetronome();
 				}}
 			>
-				{isPlaying === true? 'Stop' : 'Start'}
+				{isPlaying === true ? 'Stop' : 'Start'}
 			</StyledButton>
 		</ColumnContainer>
 	);

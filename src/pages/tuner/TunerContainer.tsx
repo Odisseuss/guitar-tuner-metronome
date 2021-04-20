@@ -5,7 +5,7 @@ import {
 	getCurrentStringBeingTuned,
 	noteFromPitch,
 } from '../../utils/functions';
-import { autocorellation, YIN, AC } from '../../utils/detectors';
+import { autocorellation, YIN } from '../../utils/detectors';
 import {
 	ITunerContainerState,
 	ITunerContainerProps,
@@ -15,12 +15,17 @@ import Tuner from './components/Tuner';
 import Header from '../../common/components/Header';
 import { context } from '../../utils/context';
 import colors from '../../types/colors.d';
+import { Howl } from 'howler';
+//@ts-ignore
+import { Steps } from 'intro.js-react';
+import { tunerSteps } from '../../utils/introSteps';
 
 class TunerContainer extends React.Component<
 	ITunerContainerProps,
 	ITunerContainerState
 > {
 	yinDetector: any;
+	dingSound: Howl;
 	constructor(props: ITunerContainerProps) {
 		super(props);
 		this.state = {
@@ -42,12 +47,13 @@ class TunerContainer extends React.Component<
 			isChromatic: false,
 			isManualStringSelectionMode: false,
 			currentStringBeingTunedIndex: 1,
+			shouldPlaySound: true,
+			tutorialEnabled: false,
 		};
 		this.gotStream = this.gotStream.bind(this);
 		this.findPitch = this.findPitch.bind(this);
 		this.findPitchWithYIN = this.findPitchWithYIN.bind(this);
 		this.liveInput = this.liveInput.bind(this);
-		this.oscillator = this.oscillator.bind(this);
 		this.handleTuningSelection = this.handleTuningSelection.bind(this);
 		this.toggleChromaticMode = this.toggleChromaticMode.bind(this);
 		this.chromaticMode = this.chromaticMode.bind(this);
@@ -56,6 +62,11 @@ class TunerContainer extends React.Component<
 			this
 		);
 		this.cycleCurrentStringIndex = this.cycleCurrentStringIndex.bind(this);
+		this.dingSound = new Howl({
+			src: ['/Ding.mp3'],
+			volume: 0.5,
+		});
+		this.setTutorialEnabled = this.setTutorialEnabled.bind(this);
 	}
 	// Resize the ruler spacing on window resize
 	componentDidMount() {
@@ -73,7 +84,6 @@ class TunerContainer extends React.Component<
 				windowWidth: windowWidth,
 			});
 		});
-		// this.liveInput();
 	}
 	toggleChromaticMode() {
 		this.setState(prevState => ({ isChromatic: !prevState.isChromatic }));
@@ -88,10 +98,10 @@ class TunerContainer extends React.Component<
 		let volume;
 		let mediaStreamSource;
 		let newAnalyser = this.state.analyser;
-		if (newAnalyser) newAnalyser.fftSize = 4096;
+		if (newAnalyser) newAnalyser.fftSize = 16384;
 		if (this.state.audioContext) {
 			volume = this.state.audioContext.createGain();
-			volume.gain.value = 2;
+			volume.gain.value = 4;
 			mediaStreamSource = this.state.audioContext.createMediaStreamSource(
 				stream
 			);
@@ -106,6 +116,7 @@ class TunerContainer extends React.Component<
 		});
 		liveInputModeCallback();
 	}
+
 	async findPitchWithYIN() {
 		if (this.state.analyser) {
 			let buffer = new Float32Array(2048);
@@ -116,18 +127,13 @@ class TunerContainer extends React.Component<
 		let ac = 0;
 		let t0 = performance.now();
 		if (this.state.audioContext) {
-			// Autocorellation 45-50ms per pass on ngrok
-			// let autocorell = await AC();
-			// if (autocorell)
-			//   ac = autocorell(this.state.buffer, this.state.audioContext.sampleRate);
-			// YIN 36-40ms per pass on ngrok server
 			let yin = await YIN();
 			if (yin)
 				ac = yin(
 					this.state.buffer,
-					0.3,
+					0.5,
 					this.state.audioContext.sampleRate,
-					0.95
+					0.9
 				);
 		}
 
@@ -135,18 +141,31 @@ class TunerContainer extends React.Component<
 		this.setState({
 			timeToCompute: t1 - t0,
 		});
-		if (ac !== -1 && ac > 30 && ac < 1048) {
+		if (ac > 30 && ac < 1048) {
 			let pitch = Math.round(ac);
 			let absoluteDiffOfFreq = Math.abs(this.state.frequency - pitch);
-			if (Math.round(pitch) === this.state.frequency) {
+			if (pitch === this.state.currentStringBeingTuned.frequency) {
 				this.setState(prevState => {
 					if (prevState.sameFrequencyCounter + 1 === 10) {
-						return { sameFrequencyCounter: 0 };
+						let shouldPlaySound = prevState.shouldPlaySound;
+						if (shouldPlaySound) {
+							shouldPlaySound = false;
+							this.dingSound.play();
+						}
+						return {
+							sameFrequencyCounter: 0,
+							shouldPlaySound,
+						};
 					}
 					return {
 						sameFrequencyCounter:
 							prevState.sameFrequencyCounter + 1,
+						shouldPlaySound: prevState.shouldPlaySound,
 					};
+				});
+			} else {
+				this.setState({
+					sameFrequencyCounter: 0,
 				});
 			}
 			if (!(absoluteDiffOfFreq > 1) && !(absoluteDiffOfFreq < 20))
@@ -155,7 +174,7 @@ class TunerContainer extends React.Component<
 				frequency: pitch,
 				note: noteFromPitch(pitch),
 			});
-		} else {
+		} else if (ac !== -1) {
 			this.setState({ frequency: 0, note: '-' });
 		}
 		let rafID = window.requestAnimationFrame(() =>
@@ -219,11 +238,6 @@ class TunerContainer extends React.Component<
 		let ac = 0;
 		let t0 = performance.now();
 		if (this.state.audioContext) {
-			// Autocorellation 45-50ms per pass on ngrok
-			// let autocorell = await AC();
-			// if (autocorell)
-			//   ac = autocorell(this.state.buffer, this.state.audioContext.sampleRate);
-			// YIN 36-40ms per pass on ngrok server
 			let yin = await YIN();
 			if (yin)
 				ac = yin(
@@ -296,17 +310,19 @@ class TunerContainer extends React.Component<
 				let result = determineStringBeingTuned(
 					tuning,
 					this.state.frequency
-					// this.state.buffer,
-					// this.state.audioContext.sampleRate
 				);
 
 				this.props.setColors(result.currentColors);
+				let shouldPlaySound = this.state.shouldPlaySound;
+				if (
+					result.currentStringBeingTuned.letter !==
+					this.state.currentStringBeingTuned.letter
+				) {
+					shouldPlaySound = true;
+				}
 				this.setState({
 					currentStringBeingTuned: result.currentStringBeingTuned,
-				});
-			} else {
-				this.setState({
-					currentStringBeingTuned: { letter: '-', frequency: 0 },
+					shouldPlaySound,
 				});
 			}
 		}
@@ -329,13 +345,14 @@ class TunerContainer extends React.Component<
 			this.setState({
 				isPlaying: false,
 				oscillatorNode: undefined,
+				isManualStringSelectionMode: false,
 				analyser: undefined,
 				frequency: 0,
 				timeToCompute: 0,
 				note: '-',
 			});
 		} else {
-			let context = new AudioContext();
+			let context = new AudioContext({ sampleRate: 44100 });
 			this.setState({
 				audioContext: context,
 				analyser: context.createAnalyser(),
@@ -352,49 +369,6 @@ class TunerContainer extends React.Component<
 					console.log('Getusermedia threw error: ' + err);
 				});
 		}
-	}
-	oscillator() {
-		if (this.state.isPlaying) {
-			//stop playing and return
-			if (this.state.oscillatorNode) this.state.oscillatorNode.stop(0);
-			this.setState({
-				oscillatorNode: undefined,
-				analyser: undefined,
-				isPlaying: false,
-			});
-			if (this.state.requestAnimationFrameID)
-				window.cancelAnimationFrame(this.state.requestAnimationFrameID);
-		}
-		let context = new AudioContext();
-		let analyser = context.createAnalyser();
-		analyser.fftSize = 4096;
-		let oscillator = context.createOscillator();
-		oscillator.connect(analyser);
-		analyser.connect(context.destination);
-		let volume = context.createGain();
-		volume.connect(context.destination);
-		volume.gain.value = -0.95;
-		oscillator.connect(volume);
-		let oscillatorFreq = 60;
-		oscillator.frequency.setValueAtTime(
-			oscillatorFreq,
-			context.currentTime
-		);
-		setInterval(() => {
-			oscillator.frequency.setValueAtTime(
-				oscillatorFreq,
-				context.currentTime
-			);
-			oscillatorFreq += 1;
-		}, 50);
-		oscillator.start(0);
-		this.setState({
-			audioContext: context,
-			analyser: analyser,
-			oscillatorNode: oscillator,
-			isPlaying: true,
-		});
-		this.findPitchWithYIN();
 	}
 	handleTuningSelection(
 		event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -427,7 +401,10 @@ class TunerContainer extends React.Component<
 				break;
 		}
 	}
-	render() {
+	setTutorialEnabled() {
+		this.setState({ tutorialEnabled: true });
+	}
+	renderRulerDivs() {
 		let rulerDivs = new Array(23).fill(0).map((line, index) => {
 			let height;
 			if (index === 0 || (index - 1) % 5 !== 0) {
@@ -473,27 +450,49 @@ class TunerContainer extends React.Component<
 					  this.state.rulerDistanceBetweenGradings
 				: 0;
 
-		let tuningIndication;
+		return { rulerDivs: rulerDivs, rulerTranslate: rulerTranslate };
+	}
+	renderTuningIndication() {
 		if (this.state.frequency !== 0) {
 			if (
 				this.state.frequency <
 				this.state.currentStringBeingTuned.frequency
 			) {
-				tuningIndication = 'Tune Higher';
+				return 'Tune Higher';
 			} else if (
 				this.state.frequency >
 				this.state.currentStringBeingTuned.frequency
 			) {
-				tuningIndication = 'Tune Lower';
+				return 'Tune Lower';
 			} else {
-				tuningIndication = 'In Tune';
+				return 'In Tune';
 			}
 		} else {
-			tuningIndication = '';
+			return '';
 		}
+	}
+	render() {
+		let { rulerDivs, rulerTranslate } = this.renderRulerDivs();
+		let tuningIndication = this.renderTuningIndication();
+
+		let tutorialEnabled =
+			this.state.tutorialEnabled ||
+			localStorage.getItem('TUNER_TUTORIAL_COMPLETE') !== 'true';
 		return (
 			<context.Provider value={this.state.isChromatic}>
 				<React.Fragment>
+					<Steps
+						enabled={tutorialEnabled}
+						steps={tunerSteps}
+						initialStep={0}
+						onExit={() => {
+							localStorage.setItem(
+								'TUNER_TUTORIAL_COMPLETE',
+								'true'
+							);
+							this.setState({ tutorialEnabled: false });
+						}}
+					/>
 					<Header
 						navigateLocation={'/metronome'}
 						setColors={this.props.setColors}
@@ -503,6 +502,7 @@ class TunerContainer extends React.Component<
 						toggleManualStringSelectionMode={
 							this.toggleManualStringSelectionMode
 						}
+						setTutorialEnabled={this.setTutorialEnabled}
 					/>
 					<Tuner
 						currentColors={this.props.currentColors}
@@ -515,7 +515,6 @@ class TunerContainer extends React.Component<
 						rulerDivs={rulerDivs}
 						rulerTranslate={rulerTranslate}
 						toggleLiveInput={this.liveInputModePicker}
-						startOscillator={this.oscillator}
 						timeToCompute={this.state.timeToCompute}
 						tuningIndication={tuningIndication}
 						isChromaticMode={this.state.isChromatic}

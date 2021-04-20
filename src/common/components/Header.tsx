@@ -2,6 +2,10 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { ReactComponent as Metronome } from '../../assets/icons/Metronome.svg';
 import { ReactComponent as Settings } from '../../assets/icons/settings.svg';
+import { ReactComponent as EightNote } from '../../assets/icons/eigth_note.svg';
+import { ReactComponent as SixteenthNote } from '../../assets/icons/sixteenth_note.svg';
+import { ReactComponent as QuarterNote } from '../../assets/icons/quarter_note.svg';
+
 import { Link, useLocation } from 'react-router-dom';
 import useOutsideAlerter from '../../utils/hooks/useOutsideClickAlert';
 let HeaderContainer = styled.div`
@@ -62,6 +66,22 @@ let StyledMetronomeSVG = styled(Metronome)`
 let StyledSettingsSvg = styled(Settings)`
 	transition: all 0.2s;
 `;
+let StyledQuarterNoteSvg = styled(QuarterNote)`
+	width: 25px;
+	height: 25px;
+	margin-left: 10px;
+`;
+let StyledEightNoteSvg = styled(EightNote)`
+	width: 25px;
+	height: 25px;
+	margin-left: 10px;
+`;
+let StyledSixteenthNoteSvg = styled(SixteenthNote)`
+	width: 25px;
+	height: 25px;
+	margin-left: 10px;
+`;
+
 export interface HeaderProps {
 	navigateLocation: string;
 	menuColor: string;
@@ -78,6 +98,8 @@ export interface HeaderProps {
 	toggleChromaticMode?: () => void;
 	chromaticMode?: () => void;
 	toggleManualStringSelectionMode?: () => void;
+	setTutorialEnabled: () => void;
+	noteType?: number;
 }
 
 const Header: React.FunctionComponent<HeaderProps> = ({
@@ -90,10 +112,19 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 	toggleChromaticMode,
 	chromaticMode,
 	toggleManualStringSelectionMode,
+	setTutorialEnabled,
+	noteType,
 }) => {
 	let [showMenu, setShowMenu] = React.useState(false);
 	let dropDownRef = React.useRef(null);
-
+	let noteIcon =
+		noteType === 0 ? (
+			<StyledSixteenthNoteSvg />
+		) : noteType === 1 ? (
+			<StyledEightNoteSvg />
+		) : (
+			<StyledQuarterNoteSvg />
+		);
 	let location = useLocation();
 	React.useEffect(() => {
 		let colors =
@@ -119,7 +150,9 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 	const renderDropdownItems = () => {
 		return location.pathname === '/' ? (
 			<>
-				<DropDownItem>Tutorial</DropDownItem>
+				<DropDownItem onClick={setTutorialEnabled}>
+					Tutorial
+				</DropDownItem>
 				<DropDownItem
 					onClick={() => {
 						if (toggleChromaticMode && chromaticMode) {
@@ -130,6 +163,7 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 					Chromatic Mode
 				</DropDownItem>
 				<DropDownItem
+					className='manual-selection'
 					onClick={() => {
 						if (toggleManualStringSelectionMode) {
 							toggleManualStringSelectionMode();
@@ -141,6 +175,9 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 			</>
 		) : (
 			<>
+				<DropDownItem onClick={setTutorialEnabled}>
+					Tutorial
+				</DropDownItem>
 				<DropDownItem
 					onClick={() => {
 						if (handleStartTapTempo && tapTempoActive != undefined)
@@ -156,14 +193,14 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 						if (cycleNoteType) cycleNoteType();
 					}}
 				>
-					Note Type
+					Note Type {noteIcon}
 				</DropDownItem>
 			</>
 		);
 	};
 	useOutsideAlerter(dropDownRef, hideMenu);
 	return (
-		<HeaderContainer>
+		<HeaderContainer className='header-container'>
 			<Link
 				to={navigateLocation}
 				style={{
@@ -173,6 +210,7 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 				}}
 			>
 				<StyledMetronomeSVG
+					className='navigator'
 					fill={navigateLocation === '/' ? '#FFFFFF' : '#969696'}
 				/>
 			</Link>

@@ -11,7 +11,7 @@ let Container = styled.div`
 	height: 90%;
 	display: flex;
 	flex-direction: column;
-	padding-top: 20%;
+	padding-top: 18%;
 	justify-content: space-around;
 	align-items: center;
 	margin-top: -120px;

@@ -1,7 +1,15 @@
 body {
-  margin: 0;
-  color: #ffffff !important;
-  font-family: "Be Vietnam", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	margin: 0;
+	color: #ffffff !important;
+	font-family: 'Be Vietnam', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.introjs-tooltiptext {
+	color: #333;
+}
+
+.text-center {
+	text-align: center;
 }
