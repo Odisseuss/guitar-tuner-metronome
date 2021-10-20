@@ -31,7 +31,7 @@ class TunerContainer extends React.Component<
 		this.state = {
 			analyser: undefined,
 			audioContext: undefined,
-			buffer: new Float32Array(2048),
+			buffer: new Float32Array(4096),
 			frequency: 0,
 			note: '-',
 			mediaStreamSource: undefined,
@@ -125,7 +125,7 @@ class TunerContainer extends React.Component<
 	async findPitchWithYIN() {
 		if (this.state.isPlaying) {
 			if (this.state.analyser) {
-				let buffer = new Float32Array(2048);
+				let buffer = new Float32Array(4096);
 				this.state.analyser.getFloatTimeDomainData(buffer);
 				this.setState({ buffer: buffer });
 			}

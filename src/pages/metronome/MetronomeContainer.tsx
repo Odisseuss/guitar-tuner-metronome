@@ -56,9 +56,6 @@ class MetronomeContainer extends React.Component<
 	}
 	setBeatsPerMeasure(beatsPerMeasure: number) {
 		this.setState({ beatsPerMeasure: beatsPerMeasure });
-		// Metronome scheduler crashes when you set it to a high value and then decrease the beats per measure very quickly. It continues with infinity beats per measure
-		// One quick option is to stop the metronome when adjusting beats per measure although it might be annoying
-		// Second option is to create a check for if the current beats per minute are smaller than the current and to wait untill execution of the current run terminates
 		this.stop();
 	}
 	cycleNoteType() {
