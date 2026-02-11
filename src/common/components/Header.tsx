@@ -24,7 +24,9 @@ let Branding = styled.h1`
 let DropDown = styled.div`
 	background-color: #202124;
 	border-width: 0;
-	box-shadow: 0 1px 2px 0 rgb(0 0 0 / 30%), 0 2px 6px 2px rgb(0 0 0 / 15%);
+	box-shadow:
+		0 1px 2px 0 rgb(0 0 0 / 30%),
+		0 2px 6px 2px rgb(0 0 0 / 15%);
 	position: absolute;
 	top: 100%;
 	right: 0;
@@ -131,12 +133,12 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 						primary: '#F72640',
 						gradient_darker: '#0F0910',
 						gradient_lighter: '#1F0E18',
-				  }
+					}
 				: {
 						primary: '#FFFFFF',
 						gradient_darker: '#0F0F0F',
 						gradient_lighter: '#282828',
-				  };
+					};
 		setColors(colors);
 	}, [location.pathname, setColors]);
 	const toggleMenu = () => {
@@ -178,7 +180,7 @@ const Header: React.FunctionComponent<HeaderProps> = ({
 				</DropDownItem>
 				<DropDownItem
 					onClick={() => {
-						if (handleStartTapTempo && tapTempoActive != undefined)
+						if (handleStartTapTempo && tapTempoActive !== undefined)
 							!tapTempoActive
 								? handleStartTapTempo('start')
 								: handleStartTapTempo('stop');
