@@ -2,6 +2,9 @@
 	"name": "guitar-tuner-metronome",
 	"version": "0.1.0",
 	"private": true,
+	"engines": {
+		"node": ">=18 <21"
+	},
 	"dependencies": {
 		"@assemblyscript/loader": "^0.17.13",
 		"@fseehawer/react-circular-slider": "^2.3.5",
@@ -42,8 +45,9 @@
 		}
 	},
 	"scripts": {
-		"start": "react-app-rewired start",
-		"build": "react-app-rewired build",
+		"start": "NODE_OPTIONS=--openssl-legacy-provider react-app-rewired start",
+		"build": "NODE_OPTIONS=--openssl-legacy-provider react-app-rewired build",
+		"postinstall": "node scripts/patch-postcss-safe-parser.js",
 		"watch": "npm-watch",
 		"test": "jest --watchAll --detectOpenHandles --config=jest.config.js",
 		"eject": "react-scripts eject",
