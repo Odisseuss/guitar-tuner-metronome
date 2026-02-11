@@ -1,12 +1,11 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { IAppProps, IContainerGradientProps } from './types/Interfaces';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Header from './common/components/Header';
 import styled from 'styled-components';
 import Loading from './common/components/Loading';
 const TunerContainer = lazy(() => import('./pages/tuner/TunerContainer'));
 const MetronomeContainer = lazy(
-	() => import('./pages/metronome/MetronomeContainer')
+	() => import('./pages/metronome/MetronomeContainer'),
 );
 
 let CenteredAppContainer = styled.div<IContainerGradientProps>`

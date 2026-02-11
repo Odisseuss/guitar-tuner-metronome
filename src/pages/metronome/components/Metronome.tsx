@@ -5,7 +5,6 @@ import MetronomeMeasureButton from './MetronomeMeasureButtons';
 import { IMetronomeProps } from '../../../types/Interfaces';
 import { ReactComponent as TapIcon } from '../../../assets/icons/Tap.svg';
 //@ts-ignore
-import { Steps, Hints } from 'intro.js-react';
 let Container = styled.div`
 	width: 100%;
 	height: 90%;
